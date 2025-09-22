@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Details - MYAA</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/home.css" />
+</head>
+<body>
+  <!-- Include Navbar -->
+  <div id="navbar-container"></div>
+
+  <!-- Product Details -->
+  <section class="product-details">
+    <!-- Left: Product image/gallery -->
+    <div class="product-image">
+      <!-- Replace with real product image -->
+      <img src="https://elrehabelc.com/wp-content/uploads/2022/09/tshirt-2.jpg" alt="Product image">
+    </div>
+
+    <!-- Right: Product info -->
+    <div class="product-info">
+      <h1 class="product-title">Product Title</h1>
+
+      <!-- Put the description in the right column to use the white space -->
+      <p class="product-description">
+        A short description of the product goes here. It highlights the fabric, fit,
+        care, and any signature details that matter to shoppers.
+      </p>
+
+      <!-- Color swatches (circles) -->
+      <div class="product-meta">
+        <div class="color-options" role="group" aria-label="Choose color">
+          <span class="label">Color:</span>
+          <!-- Use style="--swatch:#hex" to set the swatch color -->
+          <button class="swatch" type="button" aria-label="Black" title="Black" style="--swatch:#111111"></button>
+          <button class="swatch selected" type="button" aria-label="Rose" title="Rose" style="--swatch:#ff6b9b"></button>
+          <button class="swatch" type="button" aria-label="Navy" title="Navy" style="--swatch:#1e3a8a"></button>
+          <button class="swatch" type="button" aria-label="Olive" title="Olive" style="--swatch:#6b8e23"></button>
+        </div>
+
+        <!-- Size options (squares) -->
+        <div class="size-options" role="group" aria-label="Choose size">
+          <span class="label">Size:</span>
+          <button class="size" type="button">XS</button>
+          <button class="size" type="button">S</button>
+          <button class="size selected" type="button">M</button>
+          <button class="size" type="button">L</button>
+          <button class="size" type="button">XL</button>
+        </div>
+      </div>
+
+      <!-- Price -->
+      <p class="product-price">$49.99</p>
+
+      <!-- Quantity + Add to cart -->
+      <div class="actions">
+        <div class="quantity">
+          <label for="quantity">Quantity:</label>
+          <input type="number" id="quantity" value="1" min="1" max="10" />
+        </div>
+        <button id="add-to-cart-btn" class="add-to-cart-btn" type="button">
+          Add to cart
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 MYAA</p>
+  </footer>
+<!-- Add to Cart Popup -->
+<div id="addToCartModal" class="atc-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="atc-title">
+  <!-- overlay -->
+  <div class="atc-backdrop" data-atc-dismiss></div>
+
+  <!-- dialog -->
+  <div class="atc-dialog" role="document">
+    <!-- header -->
+    <header class="atc-header">
+      <div class="atc-status">
+        <span class="atc-check" aria-hidden="true">✔</span>
+        <span class="atc-status-text">Added to cart</span>
+      </div>
+      <button class="atc-close" type="button" aria-label="Close" data-atc-dismiss>×</button>
+    </header>
+
+    <!-- body -->
+    <section class="atc-body">
+      <!-- left: product snapshot -->
+      <div class="atc-product">
+        <div class="atc-thumb">
+          <img id="atc-thumb" src="" alt="Product image">
+        </div>
+
+        <div class="atc-info">
+          <h3 id="atc-title" class="atc-title">Product name</h3>
+
+          <div class="atc-variants">
+            <div class="atc-variant">
+              <span class="label">Color</span>
+              <span class="color-dot" id="atc-color-dot" title=""></span>
+              <span id="atc-color">—</span>
+            </div>
+            <div class="atc-variant">
+              <span class="label">Size</span>
+              <span class="size-chip" id="atc-size">—</span>
+            </div>
+          </div>
+
+          <div class="atc-price-row">
+            <span class="atc-price" id="atc-price">$0.00</span>
+            <div class="atc-qty">
+              <button class="qty-btn minus" type="button" aria-label="Decrease quantity" data-atc-qty="minus">−</button>
+              <input id="atc-quantity" class="qty-input" type="number" value="1" min="1" max="10" aria-label="Quantity">
+              <button class="qty-btn plus" type="button" aria-label="Increase quantity" data-atc-qty="plus">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- right: next actions -->
+      <aside class="atc-actions">
+        <button id="atc-view-cart" class="btn-primary">View cart</button>
+        <button id="atc-checkout" class="btn-secondary">Checkout</button>
+        <button class="link-btn" type="button" data-atc-dismiss>Continue shopping</button>
+      </aside>
+    </section>
+
+    <!-- suggested products (optional; static placeholders for now) -->
+    <section class="atc-suggest">
+      <h4>You might also like</h4>
+      <div class="atc-suggest-grid">
+        <a class="s-card" href="product.html?id=demo-tee" aria-label="View suggestion">
+          <img src="https://images.unsplash.com/photo-1520974735194-8d95b0e9f4a6?q=80&w=400&auto=format&fit=crop" alt="">
+          <span class="s-title">Essential Tee</span>
+          <span class="s-price">$49.99</span>
+        </a>
+        <a class="s-card" href="product.html?id=demo-hoodie" aria-label="View suggestion">
+          <img src="https://images.unsplash.com/photo-1520974735194-8d95b0e9f4a6?q=80&w=400&auto=format&fit=crop" alt="">
+          <span class="s-title">Cozy Hoodie</span>
+          <span class="s-price">$69.00</span>
+        </a>
+        <a class="s-card" href="product.html?id=demo-cap" aria-label="View suggestion">
+          <img src="https://images.unsplash.com/photo-1520974735194-8d95b0e9f4a6?q=80&w=400&auto=format&fit=crop" alt="">
+          <span class="s-title">Classic Cap</span>
+          <span class="s-price">$24.00</span>
+        </a>
+      </div>
+    </section>
+  </div>
+</div>
+
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/projectdetails.js"></script>
+  <script type="module" src="js/navbar.js"></script>
+</body>
+</html>

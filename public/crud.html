@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Manage Products | MYAA</title>
+  <link rel="stylesheet" href="css/crud_styles.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Admin CRUD Page -->
+  <div class="admin-crud-container">
+    <h1>Manage Products</h1>
+
+    <!-- Tabs for CRUD Operations -->
+    <div class="tabs">
+      <button id="createTab" class="tab-button active">Create Product</button>
+      <button id="viewTab" class="tab-button">View Products</button>
+      <button id="updateTab" class="tab-button">Update Product</button>
+    </div>
+
+    <!-- Create Product Form -->
+    <div id="createSection" class="tab-content active">
+      <h2>Create a New Product</h2>
+      <form id="createProductForm">
+        <label for="title">Product Title:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category" required>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required>
+
+        <label for="colorOptions">Color Options (comma separated):</label>
+        <input type="text" id="colorOptions" name="colorOptions">
+
+        <label for="sizeOptions">Size Options (comma separated):</label>
+        <input type="text" id="sizeOptions" name="sizeOptions">
+
+        <label for="image">Product Image URL:</label>
+        <input type="url" id="image" name="image" required>
+
+        <button type="submit">Create Product</button>
+      </form>
+    </div>
+
+    <!-- View Products Section -->
+    <div id="viewSection" class="tab-content">
+      <h2>View All Products</h2>
+      
+      <!-- Search Bar -->
+      <div class="search-container">
+        <input type="text" id="productSearch" placeholder="Search products by title, category, colors, or sizes..." class="search-input">
+        <span class="search-icon">🔍</span>
+      </div>
+      
+      <div id="productsList">
+        <!-- Dynamically populated by JS -->
+      </div>
+    </div>
+
+    <!-- Update Product Section -->
+    <div id="updateSection" class="tab-content">
+      <h2>Update Product</h2>
+      <form id="updateProductForm">
+        <label for="updateProductId">Product ID:</label>
+        <input type="text" id="updateProductId" name="updateProductId" required readonly>
+
+        <label for="updateTitle">Product Title:</label>
+        <input type="text" id="updateTitle" name="updateTitle" required>
+
+        <label for="updateCategory">Category:</label>
+        <input type="text" id="updateCategory" name="updateCategory" required>
+
+        <label for="updatePrice">Price:</label>
+        <input type="number" id="updatePrice" name="updatePrice" required>
+
+        <label for="updateColorOptions">Color Options (comma separated):</label>
+        <input type="text" id="updateColorOptions" name="updateColorOptions">
+
+        <label for="updateSizeOptions">Size Options (comma separated):</label>
+        <input type="text" id="updateSizeOptions" name="updateSizeOptions">
+
+        <label for="updateImage">Product Image URL:</label>
+        <input type="url" id="updateImage" name="updateImage">
+
+        <button type="submit">Update Product</button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Admin Authentication Check -->
+  <script type="module">
+    import { auth, db } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    // Check if user is admin
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Check if user is admin
+        const isAdmin = await checkAdminRole(user.uid);
+        if (!isAdmin) {
+          // User is not admin - redirect to home page
+          console.log("Access denied: User is not an admin");
+          window.location.href = 'index.html?error=access_denied';
+        }
+      } else {
+        // No user logged in - redirect to login page
+        console.log("No user logged in - redirecting to login");
+        window.location.href = 'login.html';
+      }
+    });
+
+    // Check if user has admin role
+    async function checkAdminRole(userId) {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          return userData.role === 'admin';
+        }
+        return false;
+      } catch (error) {
+        console.error('Error checking admin role:', error);
+        return false;
+      }
+    }
+  </script>
+
+  <!-- Link to the correct JS file -->
+  <script type="module" src="js/crudpage.js"></script>
+</body>
+</html>
