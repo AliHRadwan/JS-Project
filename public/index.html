@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MYAA - Fashion Store</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Include Navbar -->
+    <div id="navbar-container"></div>
+
+<!-- ================================================================================================== -->
+ 
+  <main class="page">
+    <!-- sidebar filters -->
+    <aside class="filters">
+    <h5>Filters</h5>
+
+    <div class="filter-section open">
+        <h6>Size</h6>
+        <div class="filter-body" id="filter-size"></div>
+    </div>
+
+    <details>
+        <summary>Category</summary>
+        <div class="filter-body" id="filter-category"></div>
+    </details>
+
+    <details>
+        <summary>Ratings</summary>
+        <div class="filter-body" id="filter-ratings"></div>
+    </details>
+</aside>
+
+
+ <!-- Main Content -->
+    <section class="content">
+        <h1>Products</h1>
+        <!-- Search -->
+            <div class="search-box">
+                <input id="search" type="text" placeholder="Search products...">
+                <span class="search-icon">🔍</span>
+            </div>
+            <!-- Pagination Controls -->
+            <div id="pagination" style="margin-top: 20px; display: flex; gap: 10px;"></div>
+
+                <!-- Products -->
+                <div class="products">
+                    <!-- <div class="product-card">
+                        <img src="assets/1.jpeg" alt="Product">
+                        <h4>Product 1</h4>
+                        <p>$29.99</p>
+                        <strong class="add-cart">+</strong>
+                    </div>
+                    <div class="product-card">
+                        <img src="assets/2.jpeg" alt="Product">
+                        <h4>Product 2</h4>
+                        <p>$39.99</p>
+                         <strong class="add-cart">+</strong>
+                    </div>
+                    <div class="product-card">
+                        <img src="assets/3.jpeg" alt="Product">
+                        <h4>Product 3</h4>
+                        <p>$49.99</p>
+                        <strong class="add-cart">+</strong>
+                    </div>
+                    <div class="product-card">
+                        <img src="assets/4.jpeg" alt="Product">
+                        <h4>Product 4</h4>
+                        <p>$59.99</p>
+                      <strong class="add-cart">+</strong>
+                    </div>
+                    <div class="product-card">
+                        <img src="assets/1.jpeg" alt="Product">
+                        <h4>Product 1</h4>
+                        <p>$29.99</p>
+                         <strong class="add-cart">+</strong>
+                    </div>
+                    <div class="product-card">
+                        <img src="assets/2.jpeg" alt="Product">
+                        <h4>Product 2</h4>
+                        <p>$39.99</p>
+                        <strong class="add-cart">+</strong>
+                    </div>
+                    <div class="product-card">
+                        <img src="assets/3.jpeg" alt="Product">
+                        <h4>Product 3</h4>
+                        <p>$49.99</p>
+                         <strong class="add-cart">+</strong>
+                    </div>
+                    <div class="product-card">
+                        <img src="assets/4.jpeg" alt="Product">
+                        <h4>Product 4</h4>
+                        <p>$59.99</p>
+                         <strong class="add-cart">+</strong>
+                    </div> -->
+                </div>  
+    </section>
+ </main>
+
+<!-- Footer -->
+        <footer class="site-footer">
+          <div class="footer-content">
+            <div class="footer-section">
+              <h4>MYAA</h4>
+              <p>© 2025 MYAA. All rights reserved.</p>
+            </div>
+        
+            <div class="footer-section">
+              <h4>Links :   </h4>
+              <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="">Contact Us</a></li>
+                <li><a href="">About</a></li>
+                <li><a href="">Privacy Policy</a></li>
+              </ul>
+            </div>
+        
+            <div class="footer-section">
+              <h4>Follow Us</h4>
+              <div class="social-links">
+                <a href="#"><img src="assets/f.jpg" alt="Facebook"></a>
+                <a href="#"><img src="assets/i.png" alt="Instagram"></a>
+                <a href="#"><img src="assets/t.webp" alt="Twitter"></a>
+              </div>
+            </div>
+          </div>
+        </footer>
+<!-- Add to Cart Popup (Home) -->
+<div id="homeAddToCartModal" class="atc-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="atc-title">
+  <div class="atc-backdrop" data-atc-dismiss></div>
+
+  <div class="atc-dialog" role="document">
+    <header class="atc-header">
+      <div class="atc-status">
+        <span class="atc-check" aria-hidden="true">✔</span>
+        <span class="atc-status-text">Add to cart</span>
+      </div>
+      <button class="atc-close" type="button" aria-label="Close" data-atc-dismiss>×</button>
+    </header>
+
+    <section class="atc-body">
+      <div class="atc-product">
+        <div class="atc-thumb">
+          <img id="atc-thumb" src="" alt="Product image">
+        </div>
+        <div class="atc-info">
+          <h3 id="atc-title" class="atc-title">Product name</h3>
+
+          <div class="atc-variants">
+            <div class="atc-variant">
+              <span class="label">Color</span>
+              <div id="atc-color-list" class="atc-color-list"></div>
+            </div>
+            <div class="atc-variant">
+              <span class="label">Size</span>
+              <div id="atc-size-list" class="atc-size-list"></div>
+            </div>
+          </div>
+
+          <div class="atc-price-row">
+            <span class="atc-price" id="atc-price">$0.00</span>
+            <div class="atc-qty">
+              <button class="qty-btn minus" type="button" aria-label="Decrease quantity" data-atc-qty="minus">−</button>
+              <input id="atc-quantity" class="qty-input" type="number" value="1" min="1" max="10" aria-label="Quantity">
+              <button class="qty-btn plus" type="button" aria-label="Increase quantity" data-atc-qty="plus">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="atc-actions">
+        <button id="atc-add" class="btn-primary">Add to cart</button>
+        <button id="atc-view-cart" class="btn-secondary">View cart</button>
+        <button class="link-btn" type="button" data-atc-dismiss>Continue shopping</button>
+      </aside>
+    </section>
+
+    <section class="atc-suggest">
+      <h4>You might also like</h4>
+      <div class="atc-suggest-grid"></div>
+    </section>
+  </div>
+</div>
+
+<!-- safety: keep it hidden even if the main CSS hasn't loaded -->
+
+<script type="module" src="js/firebase.js"></script>
+<script type="module" src="js/home.js"></script>
+<script type="module" src="js/navbar.js"></script>
+
+<!-- Handle access denied message -->
+<script>
+  // Check for access denied message
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('error') === 'access_denied') {
+    // Show access denied message
+    const message = document.createElement('div');
+    message.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #dc3545;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      max-width: 300px;
+    `;
+    message.innerHTML = `
+      <strong>Access Denied</strong><br>
+      You don't have permission to access the admin dashboard.
+      <button onclick="this.parentElement.remove()" style="
+        background: none;
+        border: none;
+        color: white;
+        float: right;
+        font-size: 18px;
+        cursor: pointer;
+        margin-left: 10px;
+      ">&times;</button>
+    `;
+    document.body.appendChild(message);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      if (message.parentElement) {
+        message.remove();
+      }
+    }, 5000);
+    
+    // Clean URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+</script>
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<!-- Unified Navbar Component -->
+<nav aria-label="Primary">
+    <div id="nav" class="nav-bar">
+        <!-- hidden checkbox toggle (CSS-only menu) -->
+        <input type="checkbox" id="menuToggle" class="menu-toggle" />
+
+        <!-- LEFT: hamburger + desktop links -->
+        <div class="nav-left">
+            <!-- label for hamburger button -->
+            <label for="menuToggle" class="btn-icon" aria-hidden="true">
+                <!-- hamburger SVG -->
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18M3 12h18M3 18h18" />
+                </svg>
+            </label>
+
+            <ul id="leftUl" class="left-nav">
+                <li class="nav-items"><a href="index.html">Home</a></li>
+                <li class="nav-items"><a href="index.html#products">Collection</a></li>
+                <li class="nav-items"><a href="index.html#about">About Us</a></li>
+            </ul>
+        </div>
+
+        <!-- LOGO  -->
+        <div class="nav-center">
+            <a href="index.html" class="logo-link" aria-label="MYAA Home">
+                <img src="assets/MYAA_logo.png" alt="MYAA" class="logo-img">
+            </a>
+        </div>
+         
+        <!-- nav right -->
+        <div class="nav-right">
+            <a href="login.html" class="login-btn" id="loginBtn">Login</a>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span class="user-name" id="userName">Welcome, User</span>
+                <a href="profile.html" class="profile-btn" id="profileBtn">Profile</a>
+            </div>
+            <a href="Cartpage.html" class="cart-btn">🛒</a>
+            <button class="logout-btn" id="logoutBtn" style="display: none;">Logout</button>
+        </div>
+
+        <!-- mobile menu (controlled by the checkbox) -->
+        <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#products">Collection</a></li>
+                <li><a href="index.html#about">About Us</a></li>
+                <li><a href="login.html" id="mobileLoginBtn">Login</a></li>
+                <li class="mobile-user-info" id="mobileUserInfo" style="display: none;">
+                    <span class="mobile-user-name" id="mobileUserName">Welcome, User</span>
+                    <a href="profile.html" id="mobileProfileBtn">Profile</a>
+                </li>
+                <li><a href="Cartpage.html">Cart</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
