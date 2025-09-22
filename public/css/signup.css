@@ -1,0 +1,184 @@
+/* Signup Page Styles */
+body { 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f8f9fa;
+  overflow-x: hidden;
+}
+
+/* Enhanced checkbox validation styling */
+.form-check.is-invalid .form-check-input {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.form-check.is-invalid .form-check-label {
+  color: #dc3545 !important;
+}
+
+.form-check.is-invalid {
+  border: 2px solid #dc3545;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+/* Auth left panel background */
+.auth-left {
+  background: linear-gradient(135deg, #000000 0%, #333333 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-left::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+}
+
+/* Dashboard-style animations */
+.auth-left {
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.auth-right {
+  animation: slideInRight 0.8s ease-out;
+}
+
+@keyframes slideInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-100px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(100px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+/* Enhanced form styling */
+.form-control {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  padding: 12px 16px;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+}
+
+.form-control:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+  background: #ffffff;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+}
+
+/* Dashboard-style buttons */
+.btn {
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-dark {
+  background: linear-gradient(135deg, #343a40, #212529);
+  border: none;
+  box-shadow: 0 4px 15px rgba(52, 58, 64, 0.3);
+}
+
+.btn-dark:hover {
+  background: linear-gradient(135deg, #212529, #000000);
+  box-shadow: 0 6px 20px rgba(52, 58, 64, 0.4);
+}
+
+/* Enhanced text styling */
+.h3 {
+  position: relative;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.h3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(135deg, #000000, #333333);
+  border-radius: 2px;
+}
+
+/* Link styling */
+.text-decoration-none {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.text-decoration-none::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #000000, #333333);
+  transition: width 0.3s ease;
+}
+
+.text-decoration-none:hover::after {
+  width: 100%;
+}
+
+.text-decoration-none:hover {
+  color: #000000 !important;
+  transform: translateY(-1px);
+}

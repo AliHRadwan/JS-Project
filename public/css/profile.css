@@ -1,0 +1,572 @@
+/* Profile Page Styles */
+body { 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+  background: #f8f9fa;
+}
+
+/* Enhanced checkbox validation styling */
+.form-check.is-invalid .form-check-input {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.form-check.is-invalid .form-check-label {
+  color: #dc3545 !important;
+}
+
+.form-check.is-invalid {
+  border: 2px solid #dc3545;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+/* Dashboard-style sidebar */
+.col-md-3.col-lg-2.bg-dark {
+  min-height: 100vh;
+  font-size: 1.2rem; 
+  animation: slideIn 0.8s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.col-md-3.col-lg-2.bg-dark h5 {
+  animation: fadeInUp 1s ease forwards;
+  opacity: 0;
+  text-align: center;
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Profile avatar with dashboard styling */
+.profile-avatar {
+  background: linear-gradient(135deg, #8d8f8e, #5b7970);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  transition: all 0.5s ease;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+}
+
+.profile-avatar:hover {
+  transform: rotate(360deg) scale(1.1);
+  background: linear-gradient(135deg, #0d6efd, #6610f2);
+}
+
+/* Dashboard-style navigation links */
+.col-md-3.col-lg-2.bg-dark .nav-link {
+  padding: 30px;
+  text-align: center; 
+  transition: all 0.4s ease;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.col-md-3.col-lg-2.bg-dark .nav-link::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: skewX(-30deg);
+  transition: left 0.5s ease;
+}
+
+.col-md-3.col-lg-2.bg-dark .nav-link:hover {
+  background-color: #495057;
+  transform: translateX(8px) scale(1.05);
+}
+
+.col-md-3.col-lg-2.bg-dark .nav-link:hover::after {
+  left: 100%;
+}
+
+.col-md-3.col-lg-2.bg-dark .nav-link.active {
+  background-color: #495057;
+  transform: translateX(8px) scale(1.05);
+}
+
+/* Content sections with dashboard animations */
+.content-section {
+  display: none;
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.content-section.active {
+  display: block;
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Dashboard-style cards for all sections */
+.card, .wishlist-item-card {
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  transition: all 0.4s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  overflow: hidden;
+  position: relative;
+  animation: slideInCard 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes slideInCard {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Staggered animation for multiple cards */
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+.card:nth-child(5) { animation-delay: 0.5s; }
+
+/* Wishlist Item Card Styles */
+.wishlist-item-card {
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  transition: all 0.4s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Enhanced hover effects for all cards */
+.card:hover, .wishlist-item-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+}
+
+.card:hover::before, .wishlist-item-card:hover::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 123, 255, 0.05) 0%, rgba(13, 110, 253, 0.05) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wishlist-image-container {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.wishlist-item-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.wishlist-image-container:hover .wishlist-item-image {
+  transform: scale(1.05);
+}
+
+.wishlist-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.wishlist-image-container:hover .wishlist-image-overlay {
+  opacity: 1;
+}
+
+.wishlist-item-details {
+  padding-left: 1rem;
+}
+
+.wishlist-item-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #212529;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.wishlist-item-attributes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wishlist-item-attributes .badge {
+  font-size: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.wishlist-item-date {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.wishlist-item-price {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.price-currency {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #007bff;
+}
+
+.price-amount {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+.wishlist-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wishlist-item-actions .btn {
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.wishlist-item-actions .btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+/* Dashboard-style buttons */
+.btn {
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Primary button styling */
+.btn-primary {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+/* Dark button styling */
+.btn-dark {
+  background: linear-gradient(135deg, #343a40, #212529);
+  border: none;
+  box-shadow: 0 4px 15px rgba(52, 58, 64, 0.3);
+}
+
+.btn-dark:hover {
+  background: linear-gradient(135deg, #212529, #000000);
+  box-shadow: 0 6px 20px rgba(52, 58, 64, 0.4);
+}
+
+/* Success button styling */
+.btn-success {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  border: none;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #1e7e34, #155724);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+/* Danger button styling */
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  border: none;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #c82333, #bd2130);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+/* Loading states */
+.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dashboard-style form elements */
+.form-control {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  padding: 12px 16px;
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+}
+
+/* Section headers with dashboard styling */
+.h4, .h5, .h6 {
+  position: relative;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.h4::after, .h5::after, .h6::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border-radius: 2px;
+}
+
+/* Badge styling */
+.badge {
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+}
+
+/* Modal styling */
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-bottom: 1px solid #dee2e6;
+  border-radius: 12px 12px 0 0;
+}
+
+.modal-footer {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-top: 1px solid #dee2e6;
+  border-radius: 0 0 12px 12px;
+}
+
+/* Table styling for orders */
+.table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.table thead th {
+  background: linear-gradient(135deg, #343a40, #495057);
+  color: white;
+  border: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 15px;
+}
+
+.table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+  transform: scale(1.01);
+}
+
+/* Empty state styling */
+.text-center.py-5, .text-center.py-4 {
+  animation: fadeInUp 0.8s ease;
+}
+
+.text-center.py-5 i, .text-center.py-4 i {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .wishlist-item-card .card-body {
+    padding: 1rem;
+  }
+  
+  .wishlist-item-image {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .wishlist-item-title {
+    font-size: 1rem;
+  }
+  
+  .price-amount {
+    font-size: 1.4rem;
+  }
+  
+  .wishlist-item-actions .btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .btn {
+    font-size: 0.8rem;
+    padding: 8px 16px;
+  }
+  
+  .card {
+    margin-bottom: 1rem;
+  }
+}
+

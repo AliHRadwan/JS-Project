@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - MYAA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/orders.css">
+    <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+    <!-- Include Navbar -->
+    <div id="navbar-container"></div>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <div>
+                    <h1>My Orders</h1>
+                    <p>Track and manage your orders</p>
+                </div>
+                <div class="header-actions">
+                    <a href="profile.html" class="btn btn-outline">
+                        <i class="fas fa-arrow-left"></i> Back to Profile
+                    </a>
+                    <button class="btn btn-outline" onclick="refreshOrders()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <a href="index.html" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="card-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="card-content">
+                    <h3 id="totalOrders">0</h3>
+                    <p>Total Orders</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="card-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="card-content">
+                    <h3 id="placedOrders">0</h3>
+                    <p>Placed</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="card-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="card-content">
+                    <h3 id="completedOrders">0</h3>
+                    <p>Completed</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="card-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div class="card-content">
+                    <h3 id="shippedOrders">0</h3>
+                    <p>Shipped</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="card-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="card-content">
+                    <h3 id="deliveredOrders">0</h3>
+                    <p>Delivered</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="card-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <div class="card-content">
+                    <h3 id="cancelledOrders">0</h3>
+                    <p>Cancelled</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchOrders" placeholder="Search orders...">
+                </div>
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="placed">Placed</option>
+                    <option value="completed">Completed</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <select id="dateFilter">
+                    <option value="">All Time</option>
+                    <option value="7">Last 7 days</option>
+                    <option value="30">Last 30 days</option>
+                    <option value="90">Last 3 months</option>
+                    <option value="365">Last year</option>
+                </select>
+                <button class="btn btn-outline" onclick="clearFilters()">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading your orders...</p>
+        </div>
+
+        <!-- Authentication Loading -->
+        <div id="authLoading" class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Checking authentication...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+            <i class="fas fa-shopping-bag"></i>
+            <h4>No orders yet</h4>
+            <p>You haven't placed any orders yet. Start shopping to see your orders here.</p>
+            <a href="index.html" class="btn btn-primary">
+                <i class="fas fa-shopping-bag"></i> Start Shopping
+            </a>
+        </div>
+
+        <!-- Orders List -->
+        <div id="ordersList" class="orders-list">
+            <!-- Orders will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="orderDetailsTitle">Order Details</h3>
+                <button class="close-btn" onclick="closeModal('orderDetailsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Order Header -->
+                <div class="order-details-header">
+                    <div class="order-info">
+                        <h4 id="orderDetailsOrderId">Order #12345</h4>
+                        <p>Placed on <span id="orderDetailsDate">Jan 15, 2024</span></p>
+                    </div>
+                    <div class="order-status">
+                        <div id="orderDetailsStatus" class="status-badge"></div>
+                        <p>Total: <strong id="orderDetailsTotal">$99.99</strong></p>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="order-items-section">
+                    <h5>Order Items</h5>
+                    <div id="orderItems">
+                        <!-- Items will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Tracking Information -->
+                <div class="tracking-section">
+                    <h5>Tracking Information</h5>
+                    <div id="trackingInfo" class="tracking-info">
+                        <!-- Tracking info will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Order Status -->
+                <div class="order-status-section">
+                    <h5>Order Status</h5>
+                    <div class="order-status-info">
+                        <span class="status-badge" id="orderStatusBadge">Processing</span>
+                    </div>
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="shipping-section">
+                    <h5>Shipping Address</h5>
+                    <div id="orderDetailsAddress">
+                        <!-- Address will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Payment Information -->
+                <div class="payment-section">
+                    <h5>Payment Information</h5>
+                    <p>Payment Method: <strong id="orderDetailsPayment">Credit Card</strong></p>
+                    <p>Payment Status: <strong id="orderDetailsPaymentStatus">Pending</strong></p>
+                </div>
+
+                <!-- Notes -->
+                <div id="orderNotes" class="notes-section">
+                    <!-- Notes will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('orderDetailsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Order Modal -->
+    <div id="cancelOrderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cancel Order</h3>
+                <button class="close-btn" onclick="closeModal('cancelOrderModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this order? This action cannot be undone.</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Stock Restoration:</strong> When you cancel this order, the items will be automatically returned to our inventory and made available for other customers.
+                </div>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Note:</strong> If your order has already been processed or shipped, you may need to contact customer service to cancel it.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('cancelOrderModal')">Keep Order</button>
+                <button class="btn btn-danger" onclick="cancelOrder()">
+                    <i class="fas fa-times"></i> Cancel Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/orders.js"></script>
+    <script type="module" src="js/navbar.js"></script>
+</body>
+</html>
