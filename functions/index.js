@@ -1,10 +1,10 @@
+const { FieldValue } = require("firebase-admin/firestore");
 const { onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+require("dotenv").config();
 
 admin.initializeApp();
-
 const db = admin.firestore();
-const STRIPE_RK = "stripe restricted key, or secret key";
 
 exports.createPaymentIntent =
   onRequest({ region: "europe-central2", secrets: ["STRIPE_SECRET"] },
@@ -20,7 +20,7 @@ exports.createPaymentIntent =
         return;
       }
 
-      const stripe = require("stripe")(STRIPE_RK);
+      const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
       try {
         const requestData = req.body;
@@ -46,12 +46,22 @@ exports.createPaymentIntent =
             return res.status(400)
               .send({ error: `Invalid qty for product ${item.product_id}.` });
           }
+
+          if (Number(product.stock) < quantity) {
+            return res.status(400)
+              .send({ error: `Stock of product ${item.product_id} is insufficient.` });
+          }
+
+          await db.collection("products").doc(item.product_id).update({
+            stock: FieldValue.increment(-quantity)
+          });
+
           amount += product.price * quantity;
         }
 
         const paymentIntent = await stripe.paymentIntents.create({
           amount: Math.round(amount * 100),
-          currency: "egp",
+          currency: "usd",
           automatic_payment_methods: { enabled: true },
           metadata: {
             user_id: user_id,
@@ -75,12 +85,14 @@ exports.stripeWebhookHandler =
       res.set("Access-Control-Allow-Headers",
         "Content-Type, Authorization");
       const sig = req.headers["stripe-signature"];
-      const webhookSecret = "stripe webhook secret";
-      const stripe = require("stripe")(STRIPE_RK);
+
+      const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+      
+      const stripe = require("stripe")(process.env.STRIPE_SECRET);
       let event;
 
       try {
-        event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
+        event = stripe.webhooks.constructEvent(req.rawBody, sig, WEBHOOK_SECRET);
       } catch (err) {
         console.error("Webhook signature verification failed.", err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
