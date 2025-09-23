@@ -4,6 +4,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { doc, getDoc, updateDoc, serverTimestamp, collection, getDocs, query, where, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { validateAndAddToCart, showStockNotification } from './stock-checker.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDBBHmLTSuwJhTcr5ZEBb7_mLKqZSfANC4",
@@ -266,47 +267,55 @@ function bindInteractions(product) {
       addedAt: Date.now()
     };
 
-    try {
-      // Get current cart from Firebase
-      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      const userData = userDoc.exists() ? userDoc.data() : {};
-      const cart = userData.cart || [];
+    // Use stock validation before adding to cart
+    const success = await validateAndAddToCart(product, qty, item.color, item.size, async () => {
+      try {
+        // Get current cart from Firebase
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        const userData = userDoc.exists() ? userDoc.data() : {};
+        const cart = userData.cart || [];
 
-      // Check if item already exists
-      const existingItemIndex = cart.findIndex(cartItem =>
-        cartItem.product_id === item.id &&
-        cartItem.color === item.color &&
-        cartItem.size === item.size
-      );
+        // Check if item already exists
+        const existingItemIndex = cart.findIndex(cartItem =>
+          cartItem.product_id === item.id &&
+          cartItem.color === item.color &&
+          cartItem.size === item.size
+        );
 
-      if (existingItemIndex >= 0) {
-        // Update quantity
-        cart[existingItemIndex].quantity += item.quantity;
-      } else {
-        // Add new item
-        cart.push({
-          product_id: item.id,
-          title: item.title,
-          images: item.image ? [item.image] : [],
-          color: item.color || "",
-          size: item.size || "",
-          unit_price: Number(item.price || 0),
-          quantity: item.quantity,
-          added_at: new Date()
+        if (existingItemIndex >= 0) {
+          // Update quantity
+          cart[existingItemIndex].quantity += item.quantity;
+        } else {
+          // Add new item
+          cart.push({
+            product_id: item.id,
+            title: item.title,
+            images: item.image ? [item.image] : [],
+            color: item.color || "",
+            size: item.size || "",
+            unit_price: Number(item.price || 0),
+            quantity: item.quantity,
+            added_at: new Date()
+          });
+        }
+
+        // Update Firebase
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          cart: cart,
+          updated_at: serverTimestamp()
         });
+
+        // Open the popup (now passes product for suggestions)
+        openATCModal(item, product);
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        throw error; // Re-throw to be caught by validateAndAddToCart
       }
+    });
 
-      // Update Firebase
-      await updateDoc(doc(db, "users", currentUser.uid), {
-        cart: cart,
-        updated_at: serverTimestamp()
-      });
-
-      // Open the popup (now passes product for suggestions)
-      openATCModal(item, product);
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      alert('Error adding item to cart. Please try again.');
+    if (!success) {
+      // Stock validation failed, don't proceed
+      return;
     }
   });
 }

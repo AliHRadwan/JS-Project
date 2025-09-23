@@ -47,7 +47,7 @@
                 </label>
               </div>
               <div class="d-flex flex-column align-items-end">
-                <a href="#" class="text-decoration-none fw-bold mb-1">Forgot Password?</a>
+                <a href="#" class="text-decoration-none fw-bold mb-1" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot Password?</a>
                 <button type="button" id="clearSavedData" class="btn btn-link btn-sm text-muted p-0" style="font-size: 0.8rem;">
                   Clear Saved Data
                 </button>
@@ -60,6 +60,42 @@
           
           <div class="text-center">
             <p class="text-muted mb-0">Don't have an account? <a href="signup.html" class="text-decoration-none fw-semibold">Create Account</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="forgotPasswordModalLabel">Reset Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <p class="text-muted mb-4">Enter your email address and we'll send you a link to reset your password.</p>
+          <form id="forgotPasswordForm">
+            <div class="mb-3">
+              <label for="resetEmail" class="form-label fw-semibold">Email Address</label>
+              <input type="email" class="form-control form-control-lg" id="resetEmail" placeholder="Enter your email" required>
+              <div class="invalid-feedback"></div>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-dark btn-lg fw-bold" id="resetPasswordBtn">
+                <span class="btn-text">Send Reset Link</span>
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+              </button>
+            </div>
+          </form>
+          <div id="resetSuccessMessage" class="alert alert-success d-none mt-3">
+            <i class="fas fa-check-circle me-2"></i>
+            <span class="message"></span>
+          </div>
+          <div id="resetErrorMessage" class="alert alert-danger d-none mt-3">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span class="message"></span>
           </div>
         </div>
       </div>

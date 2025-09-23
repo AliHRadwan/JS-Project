@@ -35,8 +35,6 @@
             totalOrdersSpan: document.getElementById('totalOrders'),
             placedOrdersSpan: document.getElementById('placedOrders'),
             completedOrdersSpan: document.getElementById('completedOrders'),
-            shippedOrdersSpan: document.getElementById('shippedOrders'),
-            deliveredOrdersSpan: document.getElementById('deliveredOrders'),
             cancelledOrdersSpan: document.getElementById('cancelledOrders')
         };
 
@@ -234,16 +232,6 @@
                                     <i class="fas fa-check"></i> Completed
                                 </span>
                             ` : ''}
-                            ${order.status === 'shipped' ? `
-                                <span class="text-info">
-                                    <i class="fas fa-truck"></i> Shipped
-                                </span>
-                            ` : ''}
-                            ${order.status === 'delivered' ? `
-                                <span class="text-success">
-                                    <i class="fas fa-check-circle"></i> Delivered
-                                </span>
-                            ` : ''}
                             ${order.status === 'cancelled' ? `
                                 <span class="text-danger">
                                     <i class="fas fa-ban"></i> Cancelled
@@ -396,18 +384,34 @@
         function updateSummaryCounts() {
             const counts = {
                 total: filteredOrders.length,
-                placed: filteredOrders.filter(order => order.status === 'placed').length,
-                paid: filteredOrders.filter(order => order.status === 'paid').length,
-                completed: filteredOrders.filter(order => order.status === 'completed').length,
-                shipped: filteredOrders.filter(order => order.status === 'shipped').length,
-                delivered: filteredOrders.filter(order => order.status === 'delivered').length,
-                cancelled: filteredOrders.filter(order => order.status === 'cancelled').length
+                placed: 0,
+                completed: 0,
+                cancelled: 0
             };
 
-            Object.entries(counts).forEach(([key, value]) => {
-                const el = elements[`${key}OrdersSpan`];
-                if (el) el.textContent = value;
+            // Count orders by status with new logic
+            filteredOrders.forEach(order => {
+                if (order.status === 'paid') {
+                    // If status is paid, increment both placed and completed
+                    counts.placed++;
+                    counts.completed++;
+                } else if (order.status === 'cancelled') {
+                    // If status is cancelled, increment cancelled
+                    counts.cancelled++;
+                } else if (order.status === 'placed') {
+                    // Regular placed orders
+                    counts.placed++;
+                } else if (order.status === 'completed') {
+                    // Regular completed orders
+                    counts.completed++;
+                }
             });
+
+            // Update the display elements
+            if (elements.totalOrdersSpan) elements.totalOrdersSpan.textContent = counts.total;
+            if (elements.placedOrdersSpan) elements.placedOrdersSpan.textContent = counts.placed;
+            if (elements.completedOrdersSpan) elements.completedOrdersSpan.textContent = counts.completed;
+            if (elements.cancelledOrdersSpan) elements.cancelledOrdersSpan.textContent = counts.cancelled;
         }
 
         function clearFilters() {
@@ -456,9 +460,8 @@
         function getStatusColor(status) {
             const colors = { 
                 'placed': 'warning', 
+                'paid': 'success',
                 'completed': 'info', 
-                'shipped': 'primary', 
-                'delivered': 'success',
                 'cancelled': 'danger'
             };
             return colors[status] || 'secondary';

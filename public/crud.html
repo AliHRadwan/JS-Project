@@ -33,6 +33,9 @@
         <label for="price">Price:</label>
         <input type="number" id="price" name="price" required>
 
+        <label for="stock">Stock Quantity:</label>
+        <input type="number" id="stock" name="stock" min="0" value="0" required>
+
         <label for="colorOptions">Color Options (comma separated):</label>
         <input type="text" id="colorOptions" name="colorOptions">
 
@@ -77,6 +80,9 @@
         <label for="updatePrice">Price:</label>
         <input type="number" id="updatePrice" name="updatePrice" required>
 
+        <label for="updateStock">Stock Quantity:</label>
+        <input type="number" id="updateStock" name="updateStock" min="0" value="0" required>
+
         <label for="updateColorOptions">Color Options (comma separated):</label>
         <input type="text" id="updateColorOptions" name="updateColorOptions">
 
@@ -92,46 +98,8 @@
 
   </div>
 
-  <!-- Admin Authentication Check -->
-  <script type="module">
-    import { auth, db } from './firebase.js';
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { getDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-    // Check if user is admin
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Check if user is admin
-        const isAdmin = await checkAdminRole(user.uid);
-        if (!isAdmin) {
-          // User is not admin - redirect to home page
-          console.log("Access denied: User is not an admin");
-          window.location.href = 'index.html?error=access_denied';
-        }
-      } else {
-        // No user logged in - redirect to login page
-        console.log("No user logged in - redirecting to login");
-        window.location.href = 'login.html';
-      }
-    });
-
-    // Check if user has admin role
-    async function checkAdminRole(userId) {
-      try {
-        const userDoc = await getDoc(doc(db, 'users', userId));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          return userData.role === 'admin';
-        }
-        return false;
-      } catch (error) {
-        console.error('Error checking admin role:', error);
-        return false;
-      }
-    }
-  </script>
-
   <!-- Link to the correct JS file -->
+  <script type="module" src="js/access-control.js"></script>
   <script type="module" src="js/crudpage.js"></script>
 </body>
 </html>

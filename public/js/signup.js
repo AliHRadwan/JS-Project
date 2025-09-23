@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // Firebase configuration
@@ -153,6 +153,9 @@ async function createUserAccount(userData) {
             displayName: fullName
         });
         
+        // Send email verification
+        await sendEmailVerification(user);
+        
         // Save user data to Firestore
         await setDoc(doc(db, "users", user.uid), {
             user_name: userData.username,
@@ -164,15 +167,17 @@ async function createUserAccount(userData) {
             role: "user",
             cart: [],
             wishlist: [],
+            email_verified: false,
             created_at: serverTimestamp(),
             updated_at: serverTimestamp()
         });
         
-        // Show success message and redirect
-        window.location.href = 'login.html';
+        // Show email verification message
+        showEmailVerificationMessage(userData.email);
         
     } catch (error) {
         console.error('Error:', error);
+        handleSignupError(error);
     }
 }
 
@@ -291,3 +296,132 @@ signupForm.addEventListener('submit', async (e) => {
     // If all validation passes, create the account
     await createUserAccount(formData);
 });
+
+// ===========================================
+// EMAIL VERIFICATION FUNCTIONALITY
+// ===========================================
+
+function showEmailVerificationMessage(email) {
+    // Hide the signup form
+    const signupForm = document.getElementById('signupForm');
+    const signupContainer = signupForm.closest('.w-100');
+    
+    // Create verification message container
+    const verificationContainer = document.createElement('div');
+    verificationContainer.className = 'text-center';
+    verificationContainer.innerHTML = `
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 rounded-circle mb-3" style="width: 80px; height: 80px;">
+                <i class="fas fa-envelope-open text-success" style="font-size: 2rem;"></i>
+            </div>
+            <h3 class="fw-bold text-dark mb-3">Check Your Email</h3>
+            <p class="text-muted mb-4">
+                We've sent a verification link to <strong>${email}</strong><br>
+                Please check your inbox and click the link to verify your account.
+            </p>
+        </div>
+        
+        <div class="alert alert-info mb-4">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Important:</strong> You must verify your email before you can sign in to your account.
+        </div>
+        
+        <div class="d-grid gap-2">
+            <button type="button" class="btn btn-outline-dark btn-lg fw-bold" onclick="resendVerificationEmail('${email}')">
+                <i class="fas fa-paper-plane me-2"></i>Resend Verification Email
+            </button>
+            <button type="button" class="btn btn-link text-muted" onclick="goToLogin()">
+                <i class="fas fa-arrow-left me-2"></i>Back to Sign In
+            </button>
+        </div>
+        
+        <div class="mt-4">
+            <p class="text-muted small">
+                Didn't receive the email? Check your spam folder or 
+                <a href="#" onclick="resendVerificationEmail('${email}')" class="text-decoration-none fw-semibold">try again</a>.
+            </p>
+        </div>
+    `;
+    
+    // Replace the form with verification message
+    signupContainer.innerHTML = '';
+    signupContainer.appendChild(verificationContainer);
+}
+
+function handleSignupError(error) {
+    let errorMessage = 'An error occurred during signup. Please try again.';
+    
+    switch (error.code) {
+        case 'auth/email-already-in-use':
+            errorMessage = 'This email address is already registered. Please use a different email or try signing in.';
+            showError('email', errorMessage);
+            break;
+        case 'auth/invalid-email':
+            errorMessage = 'Please enter a valid email address.';
+            showError('email', errorMessage);
+            break;
+        case 'auth/weak-password':
+            errorMessage = 'Password is too weak. Please choose a stronger password.';
+            showError('password', errorMessage);
+            break;
+        case 'auth/network-request-failed':
+            errorMessage = 'Network error. Please check your connection and try again.';
+            showGeneralError(errorMessage);
+            break;
+        case 'auth/too-many-requests':
+            errorMessage = 'Too many requests. Please try again later.';
+            showGeneralError(errorMessage);
+            break;
+        default:
+            showGeneralError(errorMessage);
+    }
+}
+
+function showGeneralError(message) {
+    // Create a temporary error message at the top of the form
+    const form = document.getElementById('signupForm');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'alert alert-danger mb-3';
+    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${message}`;
+    
+    form.insertBefore(errorDiv, form.firstChild);
+    
+    // Remove the error message after 5 seconds
+    setTimeout(() => {
+        if (errorDiv.parentNode) {
+            errorDiv.parentNode.removeChild(errorDiv);
+        }
+    }, 5000);
+}
+
+// Global functions for the verification page
+window.resendVerificationEmail = async function(email) {
+    try {
+        // Find the current user and resend verification email
+        const user = auth.currentUser;
+        if (user && user.email === email) {
+            await sendEmailVerification(user);
+            
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'alert alert-success mb-3';
+            successDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>Verification email sent successfully!';
+            
+            const container = document.querySelector('.text-center');
+            container.insertBefore(successDiv, container.firstChild);
+            
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.parentNode.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+    } catch (error) {
+        console.error('Error resending verification email:', error);
+        alert('Failed to resend verification email. Please try again.');
+    }
+};
+
+window.goToLogin = function() {
+    window.location.href = 'login.html';
+};

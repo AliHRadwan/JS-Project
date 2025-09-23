@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebas
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { validateAndAddToCart, showStockNotification } from '../stock-checker.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -142,41 +143,62 @@ async function addToCart(index) {
             if (index >= 0 && index < wishlist.length) {
                 const item = wishlist[index];
                 
-                // Check if item already exists in cart
-                const existingItemIndex = cart.findIndex(cartItem => 
-                    cartItem.id === item.id && 
-                    cartItem.color === item.color && 
-                    cartItem.size === item.size
-                );
+                // Create a product object for stock validation
+                const product = {
+                    id: item.id,
+                    title: item.title,
+                    stock: item.stock || 0,
+                    isActive: item.isActive !== false
+                };
 
-                if (existingItemIndex >= 0) {
-                    // Update quantity
-                    cart[existingItemIndex].quantity += 1;
-                } else {
-                    // Add new item to cart
-                    cart.push({
-                        ...item,
-                        quantity: 1,
-                        added_at: new Date()
-                    });
+                // Use stock validation before adding to cart
+                const success = await validateAndAddToCart(product, 1, item.color, item.size, async () => {
+                    try {
+                        // Check if item already exists in cart
+                        const existingItemIndex = cart.findIndex(cartItem => 
+                            cartItem.id === item.id && 
+                            cartItem.color === item.color && 
+                            cartItem.size === item.size
+                        );
+
+                        if (existingItemIndex >= 0) {
+                            // Update quantity
+                            cart[existingItemIndex].quantity += 1;
+                        } else {
+                            // Add new item to cart
+                            cart.push({
+                                ...item,
+                                quantity: 1,
+                                added_at: new Date()
+                            });
+                        }
+
+                        // Update cart in database
+                        await updateDoc(doc(db, "users", user.uid), { cart: cart });
+                        
+                        // Remove from wishlist
+                        wishlist.splice(index, 1);
+                        await updateDoc(doc(db, "users", user.uid), { wishlist: wishlist });
+                        
+                        // Refresh wishlist display
+                        loadWishlist();
+                        
+                        showStockNotification('Item added to cart and removed from wishlist!', 'info');
+                    } catch (error) {
+                        console.error('Error adding to cart:', error);
+                        throw error; // Re-throw to be caught by validateAndAddToCart
+                    }
+                });
+
+                if (!success) {
+                    // Stock validation failed, don't proceed
+                    return;
                 }
-
-                // Update cart in database
-                await updateDoc(doc(db, "users", user.uid), { cart: cart });
-                
-                // Remove from wishlist
-                wishlist.splice(index, 1);
-                await updateDoc(doc(db, "users", user.uid), { wishlist: wishlist });
-                
-                // Refresh wishlist display
-                loadWishlist();
-                
-                alert('Item added to cart and removed from wishlist!');
             }
         }
     } catch (error) {
         console.error('Error adding to cart:', error);
-        alert('Error adding item to cart. Please try again.');
+        showStockNotification('Error adding item to cart. Please try again.', 'error');
     }
 }
 

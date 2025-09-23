@@ -20,10 +20,7 @@ const db = getFirestore(app);
 const elements = {
     totalOrders: document.getElementById('profileTotalOrders'),
     placedOrders: document.getElementById('profilePlacedOrders'),
-    paidOrders: document.getElementById('profilePaidOrders'),
     completedOrders: document.getElementById('profileCompletedOrders'),
-    shippedOrders: document.getElementById('profileShippedOrders'),
-    deliveredOrders: document.getElementById('profileDeliveredOrders'),
     cancelledOrders: document.getElementById('profileCancelledOrders'),
     recentOrdersList: document.getElementById('recentOrdersList')
 };
@@ -65,20 +62,33 @@ async function loadOrders() {
 function updateOrdersSummary(orders) {
     const counts = {
         total: orders.length,
-        placed: orders.filter(order => order.status === 'placed').length,
-        paid: orders.filter(order => order.status === 'paid').length,
-        completed: orders.filter(order => order.status === 'completed').length,
-        shipped: orders.filter(order => order.status === 'shipped').length,
-        delivered: orders.filter(order => order.status === 'delivered').length,
-        cancelled: orders.filter(order => order.status === 'cancelled').length
+        placed: 0,
+        completed: 0,
+        cancelled: 0
     };
 
+    // Count orders by status with new logic
+    orders.forEach(order => {
+        if (order.status === 'paid') {
+            // If status is paid, increment both placed and completed
+            counts.placed++;
+            counts.completed++;
+        } else if (order.status === 'cancelled') {
+            // If status is cancelled, increment cancelled
+            counts.cancelled++;
+        } else if (order.status === 'placed') {
+            // Regular placed orders
+            counts.placed++;
+        } else if (order.status === 'completed') {
+            // Regular completed orders
+            counts.completed++;
+        }
+    });
+
+    // Update the display elements
     if (elements.totalOrders) elements.totalOrders.textContent = counts.total;
     if (elements.placedOrders) elements.placedOrders.textContent = counts.placed;
-    if (elements.paidOrders) elements.paidOrders.textContent = counts.paid;
     if (elements.completedOrders) elements.completedOrders.textContent = counts.completed;
-    if (elements.shippedOrders) elements.shippedOrders.textContent = counts.shipped;
-    if (elements.deliveredOrders) elements.deliveredOrders.textContent = counts.delivered;
     if (elements.cancelledOrders) elements.cancelledOrders.textContent = counts.cancelled;
 }
 
@@ -120,8 +130,6 @@ function getStatusColor(status) {
         'placed': 'warning',
         'paid': 'success', 
         'completed': 'info', 
-        'shipped': 'primary', 
-        'delivered': 'success',
         'cancelled': 'danger'
     };
     return colors[status] || 'secondary';

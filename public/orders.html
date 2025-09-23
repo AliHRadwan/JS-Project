@@ -67,24 +67,6 @@
             </div>
             <div class="summary-card">
                 <div class="card-icon">
-                    <i class="fas fa-truck"></i>
-                </div>
-                <div class="card-content">
-                    <h3 id="shippedOrders">0</h3>
-                    <p>Shipped</p>
-                </div>
-            </div>
-            <div class="summary-card">
-                <div class="card-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="card-content">
-                    <h3 id="deliveredOrders">0</h3>
-                    <p>Delivered</p>
-                </div>
-            </div>
-            <div class="summary-card">
-                <div class="card-icon">
                     <i class="fas fa-ban"></i>
                 </div>
                 <div class="card-content">
@@ -104,9 +86,8 @@
                 <select id="statusFilter">
                     <option value="">All Status</option>
                     <option value="placed">Placed</option>
+                    <option value="paid">Paid</option>
                     <option value="completed">Completed</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="delivered">Delivered</option>
                     <option value="cancelled">Cancelled</option>
                 </select>
                 <select id="dateFilter">
@@ -255,6 +236,7 @@
     <div id="toast-container"></div>
 
     <!-- Scripts -->
+    <script type="module" src="js/access-control.js"></script>
     <script type="module" src="js/orders.js"></script>
     <script type="module" src="js/navbar.js"></script>
 </body>

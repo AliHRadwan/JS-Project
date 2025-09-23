@@ -1,8 +1,7 @@
-    // Simple login functionality - keeps all validation and design exactly the same
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -129,12 +128,19 @@
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             
+            if (!user.emailVerified) {
+                await auth.signOut();
+                showEmailVerificationAlert(email);
+                return;
+            }
+            
             saveCredentials(email, password);
             
             await checkUserRoleAndRedirect(user);
             
         } catch (error) {
             console.error('Error:', error);
+            handleLoginError(error);
         }
     }
 
@@ -246,3 +252,186 @@
         
         await handleLogin(email, password);
     });
+
+
+    
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const resetEmailField = document.getElementById('resetEmail');
+    const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+    const resetSuccessMessage = document.getElementById('resetSuccessMessage');
+    const resetErrorMessage = document.getElementById('resetErrorMessage');
+
+    function showResetError(message) {
+        resetErrorMessage.querySelector('.message').textContent = message;
+        resetErrorMessage.classList.remove('d-none');
+        resetSuccessMessage.classList.add('d-none');
+    }
+
+    function showResetSuccess(message) {
+        resetSuccessMessage.querySelector('.message').textContent = message;
+        resetSuccessMessage.classList.remove('d-none');
+        resetErrorMessage.classList.add('d-none');
+    }
+
+    function hideResetMessages() {
+        resetSuccessMessage.classList.add('d-none');
+        resetErrorMessage.classList.add('d-none');
+    }
+
+    function setResetButtonLoading(loading) {
+        const btnText = resetPasswordBtn.querySelector('.btn-text');
+        const spinner = resetPasswordBtn.querySelector('.spinner-border');
+        
+        if (loading) {
+            btnText.textContent = 'Sending...';
+            spinner.classList.remove('d-none');
+            resetPasswordBtn.disabled = true;
+        } else {
+            btnText.textContent = 'Send Reset Link';
+            spinner.classList.add('d-none');
+            resetPasswordBtn.disabled = false;
+        }
+    }
+
+    function validateResetEmail(email) {
+        if (!email) {
+            showResetError('Email is required!');
+            return false;
+        }
+        
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showResetError('Please enter a valid email address!');
+            return false;
+        }
+        
+        return true;
+    }
+
+    async function handlePasswordReset(email) {
+        try {
+            setResetButtonLoading(true);
+            hideResetMessages();
+            
+            await sendPasswordResetEmail(auth, email);
+            showResetSuccess('Password reset email sent! Please check your inbox and follow the instructions to reset your password.');
+            
+            resetEmailField.value = '';
+            
+        } catch (error) {
+            console.error('Password reset error:', error);
+            
+            let errorMessage = 'An error occurred while sending the reset email. Please try again.';
+            
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    errorMessage = 'No account found with this email address.';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = 'Please enter a valid email address.';
+                    break;
+                case 'auth/too-many-requests':
+                    errorMessage = 'Too many requests. Please try again later.';
+                    break;
+                case 'auth/network-request-failed':
+                    errorMessage = 'Network error. Please check your connection and try again.';
+                    break;
+            }
+            
+            showResetError(errorMessage);
+        } finally {
+            setResetButtonLoading(false);
+        }
+    }
+
+    forgotPasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = resetEmailField.value.trim();
+        
+        if (!validateResetEmail(email)) {
+            return;
+        }
+        
+        await handlePasswordReset(email);
+    });
+
+    document.getElementById('forgotPasswordModal').addEventListener('hidden.bs.modal', () => {
+        hideResetMessages();
+        resetEmailField.value = '';
+        resetEmailField.classList.remove('is-invalid');
+    });
+
+
+    
+    function showEmailVerificationAlert(email) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-warning alert-dismissible fade show';
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle me-3" style="font-size: 1.5rem;"></i>
+                <div class="flex-grow-1">
+                    <h6 class="alert-heading mb-1">Email Verification Required</h6>
+                    <p class="mb-2">Please verify your email address before signing in. Check your inbox for a verification link.</p>
+                    <small class="text-muted">Email: ${email}</small>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        const loginForm = document.getElementById('loginForm');
+        loginForm.insertBefore(alertDiv, loginForm.firstChild);
+        
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.parentNode.removeChild(alertDiv);
+            }
+        }, 10000);
+    }
+
+    function handleLoginError(error) {
+        let errorMessage = 'Invalid email or password. Please try again.';
+        
+        switch (error.code) {
+            case 'auth/user-not-found':
+                errorMessage = 'No account found with this email address.';
+                showError('email', errorMessage);
+                break;
+            case 'auth/wrong-password':
+                errorMessage = 'Incorrect password. Please try again.';
+                showError('password', errorMessage);
+                break;
+            case 'auth/invalid-email':
+                errorMessage = 'Please enter a valid email address.';
+                showError('email', errorMessage);
+                break;
+            case 'auth/user-disabled':
+                errorMessage = 'This account has been disabled. Please contact support.';
+                showGeneralError(errorMessage);
+                break;
+            case 'auth/too-many-requests':
+                errorMessage = 'Too many failed attempts. Please try again later.';
+                showGeneralError(errorMessage);
+                break;
+            case 'auth/network-request-failed':
+                errorMessage = 'Network error. Please check your connection and try again.';
+                showGeneralError(errorMessage);
+                break;
+            default:
+                showGeneralError(errorMessage);
+        }
+    }
+//login wrong password message
+    function showGeneralError(message) {
+        const form = document.getElementById('loginForm');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger mb-3';
+        errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${message}`;
+        
+        form.insertBefore(errorDiv, form.firstChild);
+        
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.parentNode.removeChild(errorDiv);
+            }
+        }, 5000);
+    }

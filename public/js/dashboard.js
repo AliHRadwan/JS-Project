@@ -19,40 +19,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Admin authentication and role checking
+// Admin authentication is now handled by access-control.js
+// Initialize dashboard for authenticated admin user
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // Check if user is admin
-    const isAdmin = await checkAdminRole(user.uid);
-    if (isAdmin) {
-      await setUserAvatar(user.email);
-      console.log("Admin user logged in:", user.email);
-    } else {
-      // User is not admin - redirect to home page
-      console.log("Access denied: User is not an admin");
-      window.location.href = 'index.html?error=access_denied';
-    }
-  } else {
-    // No user logged in - redirect to login page
-    console.log("No user logged in - redirecting to login");
-    window.location.href = 'login.html';
+    await setUserAvatar(user.email);
+    console.log("Admin user logged in:", user.email);
   }
 });
-
-// Check if user has admin role
-async function checkAdminRole(userId) {
-  try {
-    const userDoc = await getDoc(doc(db, 'users', userId));
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      return userData.role === 'admin';
-    }
-    return false;
-  } catch (error) {
-    console.error('Error checking admin role:', error);
-    return false;
-  }
-}
 
 //function to set avatar and user name 
 async function setUserAvatar(userEmail) {
@@ -283,7 +257,7 @@ function addCancelListeners() {
 
       await updateDoc(doc(db, "orders", orderId), { status: "canceled" });
 
-      document.querySelector(`#row-${orderId} .status`).textContent = "canceled";
+      document.querySelector(`#row-${orderId} .status`).textContent = "cancelled";
       alert(`Order ${orderId} has been canceled ✅`);
     });
   });

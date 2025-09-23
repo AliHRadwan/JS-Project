@@ -198,7 +198,9 @@
 <script>
   // Check for access denied message
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('error') === 'access_denied') {
+  const error = urlParams.get('error');
+  
+  if (error === 'access_denied' || error === 'admin_access_denied') {
     // Show access denied message
     const message = document.createElement('div');
     message.style.cssText = `

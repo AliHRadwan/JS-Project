@@ -22,11 +22,13 @@ const elements = {
     userInfo: document.getElementById('userInfo'),
     userName: document.getElementById('userName'),
     profileBtn: document.getElementById('profileBtn'),
+    adminBtn: document.getElementById('adminBtn'),
     logoutBtn: document.getElementById('logoutBtn'),
     mobileLoginBtn: document.getElementById('mobileLoginBtn'),
     mobileUserInfo: document.getElementById('mobileUserInfo'),
     mobileUserName: document.getElementById('mobileUserName'),
-    mobileProfileBtn: document.getElementById('mobileProfileBtn')
+    mobileProfileBtn: document.getElementById('mobileProfileBtn'),
+    mobileAdminBtn: document.getElementById('mobileAdminBtn')
 };
 
 // Initialize navbar
@@ -83,6 +85,11 @@ async function updateNavbarForUser(user) {
         if (elements.mobileLoginBtn) elements.mobileLoginBtn.style.display = 'none';
         if (elements.mobileUserInfo) elements.mobileUserInfo.style.display = 'block';
         
+        // Check if user is admin and show/hide admin links
+        const isAdmin = await checkUserRole(user.uid);
+        if (elements.adminBtn) elements.adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
+        if (elements.mobileAdminBtn) elements.mobileAdminBtn.style.display = isAdmin ? 'inline-block' : 'none';
+        
         // Update user name - prioritize displayName, then try to get full name from profile
         
         let displayName = await updateUserDisplayName(user);
@@ -101,6 +108,27 @@ async function updateNavbarForUser(user) {
         if (elements.logoutBtn) elements.logoutBtn.style.display = 'none';
         if (elements.mobileLoginBtn) elements.mobileLoginBtn.style.display = 'block';
         if (elements.mobileUserInfo) elements.mobileUserInfo.style.display = 'none';
+        if (elements.adminBtn) elements.adminBtn.style.display = 'none';
+        if (elements.mobileAdminBtn) elements.mobileAdminBtn.style.display = 'none';
+    }
+}
+
+// Check if user has admin role
+async function checkUserRole(userId) {
+    try {
+        const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js");
+        const { getFirestore } = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js");
+        const db = getFirestore(app);
+        
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            return userData.role === 'admin';
+        }
+        return false;
+    } catch (error) {
+        console.error('Error checking user role:', error);
+        return false;
     }
 }
 
@@ -121,11 +149,13 @@ async function loadNavbar() {
                     userInfo: document.getElementById('userInfo'),
                     userName: document.getElementById('userName'),
                     profileBtn: document.getElementById('profileBtn'),
+                    adminBtn: document.getElementById('adminBtn'),
                     logoutBtn: document.getElementById('logoutBtn'),
                     mobileLoginBtn: document.getElementById('mobileLoginBtn'),
                     mobileUserInfo: document.getElementById('mobileUserInfo'),
                     mobileUserName: document.getElementById('mobileUserName'),
-                    mobileProfileBtn: document.getElementById('mobileProfileBtn')
+                    mobileProfileBtn: document.getElementById('mobileProfileBtn'),
+                    mobileAdminBtn: document.getElementById('mobileAdminBtn')
                 });
                 
                 initNavbar();
