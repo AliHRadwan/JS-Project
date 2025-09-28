@@ -33,7 +33,7 @@ const style = {
   },
 };
 const elements = stripe.elements();
-const cardElement = elements.create('card', { style: style });
+const cardElement = elements.create('card', { hidePostalCode: true, style: style });
 cardElement.mount("#card-element");
 
 const auth = getAuth();
@@ -72,11 +72,15 @@ document.getElementById("payment-form").addEventListener("submit", async (e) => 
         const data = await response.json();
         const clientSecret = data.clientSecret;
 
+        const messageDiv = document.getElementById("payment-message");
+
+        if (data.error) {
+          messageDiv.textContent = "⚠️ " + data.error;
+        }
+
         const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
             payment_method: { card: cardElement }
         });
-
-    const messageDiv = document.getElementById("payment-message");
 
     if (error) {
         messageDiv.textContent = "⚠️ " + error.message;

@@ -1245,4 +1245,38 @@ tr:hover td {
     transform: translateY(0) scale(1);
   }
 }
+input[type="number"], input[type="text"], select {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 14px;
+}
+
+button {
+  background-color: #111;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #333;
+}
+
+.back-btn {
+  font-size: 18px;
+  color: #007bff;
+  margin: 10px 0;
+}
+.product-item {
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.product-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
 

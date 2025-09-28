@@ -236,13 +236,15 @@ function renderProduct(p) {
 
 // ---------- Interactions ----------
 function bindInteractions(product) {
-  const qty = qs("#quantity");
-  qty.addEventListener("change", () => {
-    let v = parseInt(qty.value, 10);
-    if (isNaN(v) || v < 1) v = 1;
-    if (v > 10) v = 10;
-    qty.value = v;
-  });
+ const qty = qs("#quantity");
+qty.addEventListener("change", () => {
+  let v = parseInt(qty.value, 10);
+  if (isNaN(v) || v < 1) v = 1;
+  if (v > currentProduct.stock) v = currentProduct.stock; // Limit to available stock
+  if (v > 10) v = 10; // Cap at 10
+  qty.value = v;
+});
+
 
   qs('#add-to-cart-btn').addEventListener('click', async () => {
     if (!currentUser) {

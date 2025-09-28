@@ -14,6 +14,7 @@
   <main class="cart-page" role="main">
     <section class="cart container">
       <header class="cart-header">
+        <a href="index.html" class="back-btn">← Back</a>
         <h1>Your Cart</h1>
         <a class="continue-link" href="index.html">Continue shopping</a>
       </header>
@@ -31,89 +32,7 @@
         <!-- Items list -->
         <div class="cart-items-wrap">
           <ul id="cart-items" class="cart-items" aria-live="polite">
-            <!-- Example item (static for now — will be rendered by JS later) -->
-            <li class="cart-item" data-id="demo-tee" data-color="Rose" data-size="M">
-              <div class="item-media">
-                <a href="product.html?id=demo-tee" class="item-image-link" aria-label="View product">
-                  <img class="item-image" src="https://images.unsplash.com/photo-1520974735194-8d95b0e9f4a6?q=80&w=800&auto=format&fit=crop"
-                      alt="Essential Cotton Tee" loading="lazy">
-                </a>
-              </div>
-
-              <div class="item-main">
-                <a href="product.html?id=demo-tee" class="item-title">Essential Cotton Tee</a>
-
-                <div class="item-variants">
-                  <span class="variant">
-                    <span class="variant-label">Color:</span>
-                    <span class="color-dot" title="Rose" style="--swatch:#ff6b9b"></span>
-                    <span class="variant-value">Rose</span>
-                  </span>
-                  <span class="variant">
-                    <span class="variant-label">Size:</span>
-                    <span class="size-badge">M</span>
-                  </span>
-                </div>
-
-                <button class="remove-item" type="button" aria-label="Remove item">Remove</button>
-              </div>
-
-              <div class="item-price">
-                <span class="unit-price" data-price="49.99">$49.99</span>
-              </div>
-
-              <div class="item-qty">
-                <button class="qty-btn minus" type="button" aria-label="Decrease quantity">−</button>
-                <input class="qty-input" type="number" inputmode="numeric" pattern="[0-9]*" value="1" min="1" max="10" aria-label="Quantity">
-                <button class="qty-btn plus" type="button" aria-label="Increase quantity">+</button>
-              </div>
-
-              <div class="item-total">
-                <span class="line-total">$49.99</span>
-              </div>
-            </li>
-
-            <!-- Duplicate example item  -->
-            <li class="cart-item" data-id="demo-hoodie" data-color="Black" data-size="L">
-              <div class="item-media">
-                <a href="product.html?id=demo-hoodie" class="item-image-link" aria-label="View product">
-                  <img class="item-image" src="https://images.unsplash.com/photo-1520974735194-8d95b0e9f4a6?q=80&w=800&auto=format&fit=crop"
-                       alt="Cozy Fleece Hoodie" loading="lazy">
-                </a>
-              </div>
-
-              <div class="item-main">
-                <a href="product.html?id=demo-hoodie" class="item-title">Cozy Fleece Hoodie</a>
-
-                <div class="item-variants">
-                  <span class="variant">
-                    <span class="variant-label">Color:</span>
-                    <span class="color-dot" title="Black" style="--swatch:#111111"></span>
-                    <span class="variant-value">Black</span>
-                  </span>
-                  <span class="variant">
-                    <span class="variant-label">Size:</span>
-                    <span class="size-badge">L</span>
-                  </span>
-                </div>
-
-                <button class="remove-item" type="button" aria-label="Remove item">Remove</button>
-              </div>
-
-              <div class="item-price">
-                <span class="unit-price" data-price="69.00">$69.00</span>
-              </div>
-
-              <div class="item-qty">
-                <button class="qty-btn minus" type="button" aria-label="Decrease quantity">−</button>
-                <input class="qty-input" type="number" inputmode="numeric" pattern="[0-9]*" value="1" min="1" max="10" aria-label="Quantity">
-                <button class="qty-btn plus" type="button" aria-label="Increase quantity">+</button>
-              </div>
-
-              <div class="item-total">
-                <span class="line-total">$69.00</span>
-              </div>
-            </li>
+            
           </ul>
         </div>
 
@@ -163,7 +82,7 @@
 
 <script type="module" src="js/firebase.js"></script>
 <script type="module" src="js/access-control.js"></script>
-<script type="module" src="js/cart1.js"></script>
+<script type="module" src="js/cart_page.js"></script>
 <script type="module" src="js/navbar.js"></script>
 
 </body>
