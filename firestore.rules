@@ -3,17 +3,67 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2025, 10, 7);
+    // Helper function to check if a user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if the request is from a user who owns the document
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Helper function to check if the user is an admin
+    // This requires setting a custom claim 'isAdmin' on the user's auth token
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.isAdmin == true;
+    }
+
+    //----------------------------------------------------------------------
+    //  PRODUCTS Collection Rules
+    //  - Read: Anyone can browse products.
+    //  - Write: Only admins can manage products.
+    //----------------------------------------------------------------------
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    //----------------------------------------------------------------------
+    //  USERS Collection Rules
+    //  - Read/Update: A user can only access their own document.
+    //  - Create: A user can create their own document upon signup.
+    //----------------------------------------------------------------------
+    match /users/{userId} {
+      allow read, update: if isOwner(userId);
+      allow create: if isOwner(userId)
+                    // Ensure that when a user document is created...
+                    && request.resource.data.cart is list      // 'cart' must be an array (list)
+                    && request.resource.data.wishlist is list; // 'wishlist' must be an array (list)
+
+      // A more secure update rule that only allows cart and wishlist modifications
+      // This prevents a user from changing other fields, like their email or a role.
+      // To use this, replace the 'allow update' line above with this one.
+      // allow update: if isOwner(userId)
+      //               && request.resource.data.keys().hasAll(['cart', 'wishlist']);
+    }
+
+    //----------------------------------------------------------------------
+    //  ORDERS Collection Rules
+    //  - Read: A user can see their own orders. Admins can see all orders.
+    //  - Create: An authenticated user can create an order for themselves.
+    //  - Update/Delete: Not allowed for users, to preserve order history.
+    //----------------------------------------------------------------------
+    match /orders/{orderId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isAuthenticated()
+                    // Validate the incoming order data
+                    && isOwner(request.resource.data.userId)                 // User ID must match the person creating it
+                    && request.resource.data.items is list                   // Must include an array of items
+                    && !request.resource.data.items.empty()                  // The items array cannot be empty
+                    && request.resource.data.totalPrice is number            // Must include a total price
+                    && request.resource.data.createdAt == request.time;      // Must use the server's timestamp
+      allow update, delete: if false; // Or 'if isAdmin()' if admins need to update status
     }
   }
 }

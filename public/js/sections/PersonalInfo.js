@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebas
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { toast } from '../toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -60,11 +61,11 @@ async function loadUserProfile(user) {
             userData = userDoc.data();
             displayUserData();
         } else {
-            alert("User data not found. Please contact support.");
+            toast.error("User data not found. Please contact support.");
         }
     } catch (error) {
         console.error("Error loading profile:", error);
-        alert("Error loading profile data. Please try again.");
+        toast.error("Error loading profile data. Please try again.");
     }
 }
 
@@ -228,11 +229,11 @@ async function saveProfileChanges() {
         userData = { ...userData, ...updatedData };
         displayUserData();
         switchToDisplayMode();
-        alert('Profile updated successfully!');
+        toast.success('Profile updated successfully!');
         
     } catch (error) {
         console.error('Error updating profile:', error);
-        alert('Error updating profile. Please try again.');
+        toast.error('Error updating profile. Please try again.');
     }
 }
 

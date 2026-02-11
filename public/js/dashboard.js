@@ -5,6 +5,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase
 import { onSnapshot, collection, getDocs, query, where, updateDoc, doc, getDoc, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { logout } from './logout.js';
+import { toast } from './toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -258,7 +259,7 @@ function addCancelListeners() {
       await updateDoc(doc(db, "orders", orderId), { status: "canceled" });
 
       document.querySelector(`#row-${orderId} .status`).textContent = "cancelled";
-      alert(`Order ${orderId} has been canceled ✅`);
+      toast.success(`Order ${orderId} has been canceled`);
     });
   });
 }

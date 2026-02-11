@@ -4,6 +4,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { toast } from './toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -66,10 +67,10 @@ document.getElementById('createProductForm').addEventListener('submit', async (e
       created_at: new Date(),
     });
 
-    alert('Product created successfully!');
+    toast.success('Product created successfully!');
     e.target.reset(); // Reset form
   } catch (error) {
-    alert('Error creating product: ' + error.message);
+    toast.error('Error creating product: ' + error.message);
   }
 });
 
@@ -99,7 +100,7 @@ async function loadProducts() {
     // Add search functionality
     addSearchFunctionality();
   } catch (error) {
-    alert('Error loading products: ' + error.message);
+    toast.error('Error loading products: ' + error.message);
   }
 }
 
@@ -224,10 +225,10 @@ async function editProduct(id) {
       document.getElementById('updateSizeOptions').value = normalizedProduct.sizeArray.join(',');
       document.getElementById('updateImage').value = product.image || '';
     } else {
-      alert('Product not found!');
+      toast.error('Product not found!');
     }
   } catch (error) {
-    alert('Error loading product: ' + error.message);
+    toast.error('Error loading product: ' + error.message);
   }
 }
 
@@ -256,7 +257,7 @@ document.getElementById('updateProductForm').addEventListener('submit', async (e
       image,
     });
 
-    alert('Product updated successfully!');
+    toast.success('Product updated successfully!');
     e.target.reset(); // Reset form
     
     // Update the product in the global array
@@ -285,7 +286,7 @@ document.getElementById('updateProductForm').addEventListener('submit', async (e
     document.getElementById('viewTab').classList.add('active');
     document.getElementById('viewSection').classList.add('active');
   } catch (error) {
-    alert('Error updating product: ' + error.message);
+    toast.error('Error updating product: ' + error.message);
   }
 });
 
@@ -305,9 +306,9 @@ async function deleteProduct(id) {
       const filteredProducts = filterProducts(allProducts, searchTerm);
       displayProducts(filteredProducts);
       
-      alert('Product deleted successfully!');
+      toast.success('Product deleted successfully!');
     } catch (error) {
-      alert('Error deleting product: ' + error.message);
+      toast.error('Error deleting product: ' + error.message);
     }
   }
 }

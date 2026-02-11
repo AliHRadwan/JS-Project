@@ -10,6 +10,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { collection, getDocs, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { validateAndAddToCart, showStockNotification } from './stock-checker.js';
+import { toast } from './toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -265,6 +266,12 @@ const COLOR_HEX = {
 const money = (n)=> new Intl.NumberFormat(undefined,{ style:"currency", currency:"USD" }).format(n);
 const clampQty = (v)=> !Number.isFinite(v)||v<1 ? 1 : (v>10 ? 10 : v);
 
+// Track event handlers for cleanup
+let currentQtyClickHandler = null;
+let currentAddHandler = null;
+let currentViewCartHandler = null;
+let currentDismissHandlers = [];
+
 // Normalize product to the fields the popup needs
 function normalizeForATC(data){
   const images = Array.isArray(data.images) ? data.images : (data.image ? [data.image] : []);
@@ -354,20 +361,41 @@ async function openATCFromHome(productId){
     selectedSize = "";
   }
 
+  // Clean up previous event handlers to prevent stacking
+  if (currentQtyClickHandler) {
+    modal.removeEventListener("click", currentQtyClickHandler);
+  }
+  
+  const addBtn = modal.querySelector("#atc-add");
+  if (currentAddHandler) {
+    addBtn.removeEventListener("click", currentAddHandler);
+  }
+  
+  const viewCartBtn = modal.querySelector("#atc-view-cart");
+  if (currentViewCartHandler && viewCartBtn) {
+    viewCartBtn.removeEventListener("click", currentViewCartHandler);
+  }
+  
+  // Remove previous dismiss handlers
+  currentDismissHandlers.forEach(({ element, handler }) => {
+    element.removeEventListener("click", handler);
+  });
+  currentDismissHandlers = [];
+
   // Qty +/- (delegated)
   const qtyClick = (e)=>{
     const btn = e.target.closest("[data-atc-qty]"); if (!btn) return;
     const delta = btn.dataset.atcQty === "plus" ? 1 : -1;
     qtyInput.value = clampQty((parseInt(qtyInput.value,10)||1) + delta);
   };
-  modal.addEventListener("click", qtyClick, { once:false });
+  currentQtyClickHandler = qtyClick;
+  modal.addEventListener("click", qtyClick);
 
   // Add to cart (Firebase)
-  const addBtn = modal.querySelector("#atc-add");
   const onAdd = async ()=>{
     const currentUser = auth.currentUser;
     if (!currentUser) {
-      alert('Please log in to add items to cart');
+      toast.warning('Please log in to add items to cart');
       return;
     }
 
@@ -433,16 +461,23 @@ async function openATCFromHome(productId){
       return;
     }
   };
-  addBtn.addEventListener("click", onAdd, { once:true });
+  currentAddHandler = onAdd;
+  addBtn.addEventListener("click", onAdd);
 
   // View cart
-  modal.querySelector("#atc-view-cart")?.addEventListener("click", ()=> {
+  const viewCartHandler = ()=> {
     window.location.href = "Cartpage.html";
-  }, { once:true });
+  };
+  currentViewCartHandler = viewCartHandler;
+  if (viewCartBtn) {
+    viewCartBtn.addEventListener("click", viewCartHandler);
+  }
 
   // Close on backdrop / ✕ / Continue
   modal.querySelectorAll("[data-atc-dismiss]").forEach(x=>{
-    x.addEventListener("click", ()=> modal.setAttribute("aria-hidden","true"), { once:true });
+    const dismissHandler = ()=> modal.setAttribute("aria-hidden","true");
+    x.addEventListener("click", dismissHandler);
+    currentDismissHandlers.push({ element: x, handler: dismissHandler });
   });
 
   // Show

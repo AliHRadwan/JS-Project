@@ -3,6 +3,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { validateAndAddToCart, showStockNotification } from '../stock-checker.js';
+import { toast } from '../toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -220,7 +221,7 @@ async function removeFromWishlist(index) {
             }
         } catch (error) {
             console.error('Error removing from wishlist:', error);
-            alert('Error removing item from wishlist. Please try again.');
+            toast.error('Error removing item from wishlist. Please try again.');
         }
     }
 }

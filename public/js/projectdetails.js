@@ -5,6 +5,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { doc, getDoc, updateDoc, serverTimestamp, collection, getDocs, query, where, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { validateAndAddToCart, showStockNotification } from './stock-checker.js';
+import { toast } from './toast.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDBBHmLTSuwJhTcr5ZEBb7_mLKqZSfANC4",
@@ -45,7 +46,7 @@ let currentProduct = null;
 document.addEventListener("DOMContentLoaded", () => {
   init().catch(err => {
     console.error(err);
-    toast("Could not load product");
+    toast.error("Could not load product");
   });
 });
 
@@ -248,7 +249,7 @@ qty.addEventListener("change", () => {
 
   qs('#add-to-cart-btn').addEventListener('click', async () => {
     if (!currentUser) {
-      alert('Please log in to add items to cart');
+      toast.warning('Please log in to add items to cart');
       return;
     }
 
@@ -323,31 +324,6 @@ qty.addEventListener("change", () => {
 }
 
 // ---------- Utils ----------
-function toast(message) {
-  let el = document.getElementById("toast");
-  if (!el) {
-    el = document.createElement("div");
-    el.id = "toast";
-    Object.assign(el.style, {
-      position: "fixed",
-      bottom: "20px",
-      left: "50%",
-      transform: "translateX(-50%)",
-      padding: "12px 16px",
-      background: "#111",
-      color: "#fff",
-      borderRadius: "8px",
-      boxShadow: "0 8px 20px rgba(0,0,0,.15)",
-      zIndex: "999",
-      transition: "opacity .3s",
-      opacity: "0"
-    });
-    document.body.appendChild(el);
-  }
-  el.textContent = message;
-  el.style.opacity = "1";
-  setTimeout(() => (el.style.opacity = "0"), 1500);
-}
 
 function formatCurrency(n) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(n);

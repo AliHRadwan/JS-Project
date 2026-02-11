@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebas
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { toast } from '../toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -120,7 +121,7 @@ async function saveAddress() {
     const addressLabelText = elements.addressLabel?.value.trim() || '';
     
     if (!addressText) {
-        alert('Please enter an address');
+        toast.warning('Please enter an address');
         return;
     }
     
@@ -170,7 +171,7 @@ async function saveAddress() {
         }
     } catch (error) {
         console.error('Error saving address:', error);
-        alert('Error saving address. Please try again.');
+        toast.error('Error saving address. Please try again.');
     }
 }
 
@@ -215,7 +216,7 @@ async function editAddress(index) {
         }
     } catch (error) {
         console.error('Error loading address for editing:', error);
-        alert('Error loading address details. Please try again.');
+        toast.error('Error loading address details. Please try again.');
     }
 }
 

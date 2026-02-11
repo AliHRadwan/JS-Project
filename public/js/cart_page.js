@@ -2,6 +2,7 @@
 
 /* ---------- Navbar Loading ---------- */
 import { loadNavbar } from './navbar.js';
+import { toast } from './toast.js';
 
 /* ---------- UI/checkout config ---------- */
 const CURRENCY = "USD";
@@ -124,7 +125,7 @@ async function checkStock(productId, requestedQty) {
 
     if (!productSnap.exists()) {
       console.warn(`Product ${productId} not found.`);
-      toast("Product information not available.");
+      toast.error("Product information not available.");
       return false;
     }
     
@@ -140,7 +141,7 @@ async function checkStock(productId, requestedQty) {
     return availableStock >= requestedQty;
   } catch (error) {
     console.error("Error checking stock:", error);
-    toast("Could not verify stock. Please try again.");
+    toast.error("Could not verify stock. Please try again.");
     return false; // Fail safe on error
   }
 }
@@ -285,7 +286,7 @@ document.addEventListener("click", async (e) => {
                 input.value = newVal;
                 await setQty(li, newVal);
             } else {
-                toast("Not enough stock available.");
+                toast.warning("Not enough stock available.");
             }
         } else if (btn.classList.contains("minus")) {
             const newVal = clampQty(currentVal - 1);
@@ -316,7 +317,7 @@ document.addEventListener("change", async (e) => {
         if (hasStock) {
             await setQty(li, requestedQty);
         } else {
-            toast("Not enough stock available.");
+            toast.warning("Not enough stock available.");
             input.value = currentQty; // Revert input to last valid quantity
         }
     } else {
@@ -354,20 +355,20 @@ document.addEventListener("submit", (e)=>{
   e.preventDefault();
   const code = (qs("#promo").value||"").toUpperCase().trim();
   if (!code){ setPromo(""); recomputeAndUpdateSummary(); return; }
-  if (PROMOS[code]){ setPromo(code); recomputeAndUpdateSummary(); toast(`Promo applied: ${code}`); }
-  else toast("Invalid promo code");
+  if (PROMOS[code]){ setPromo(code); recomputeAndUpdateSummary(); toast.success(`Promo applied: ${code}`); }
+  else toast.error("Invalid promo code");
 });
 
 const checkoutBtn = document.getElementById("checkoutBtn");
 if (checkoutBtn){
   checkoutBtn.addEventListener("click", async ()=>{
     if (!currentUser) {
-      toast("Please log in to proceed with checkout");
+      toast.warning("Please log in to proceed with checkout");
       return;
     }
 
     if (cachedCart.length === 0) {
-      toast("Your cart is empty");
+      toast.warning("Your cart is empty");
       return;
     }
 
@@ -402,16 +403,4 @@ function updateSummary({ subtotal, discount, shipping, tax, total }){
   if (shipEl) shipEl.textContent = subtotal>0 ? (shipping===0?"Free":fmt(shipping)) : "Calculated at checkout";
   set("#taxAmount", fmt(tax));
   set("#totalAmount", fmt(total));
-}
-
-/* ---------- Toast ---------- */
-function toast(message){
-  let el = document.getElementById("toast");
-  if (!el){
-    el = document.createElement("div");
-    el.id="toast";
-    Object.assign(el.style,{position:"fixed",bottom:"20px",left:"50%",transform:"translateX(-50%)",padding:"12px 16px",background:"#111",color:"#fff",borderRadius:"8px",boxShadow:"0 8px 20px rgba(0,0,0,.15)",zIndex:"999",transition:"opacity .3s",opacity:"0"});
-    document.body.appendChild(el);
-  }
-  el.textContent=message; el.style.opacity="1"; setTimeout(()=>el.style.opacity="0",1500);
 }

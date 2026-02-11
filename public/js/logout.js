@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { toast } from './toast.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDBBHmLTSuwJhTcr5ZEBb7_mLKqZSfANC4",
@@ -18,6 +19,6 @@ export async function logout() {
         window.location.href = "index.html";
     } catch (error) {
         console.error("Error logging out:", error);
-        alert("Error logging out. Please try again.");
+        toast.error("Error logging out. Please try again.");
     }
 }

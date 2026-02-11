@@ -4,6 +4,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { toast } from './toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -418,7 +419,7 @@ window.resendVerificationEmail = async function(email) {
         }
     } catch (error) {
         console.error('Error resending verification email:', error);
-        alert('Failed to resend verification email. Please try again.');
+        toast.error('Failed to resend verification email. Please try again.');
     }
 };
 
