@@ -4,7 +4,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { toast } from './toast.js';
+import { toast, showConfirm } from './toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -292,7 +292,7 @@ document.getElementById('updateProductForm').addEventListener('submit', async (e
 
 // ---------- Delete Product ----------
 async function deleteProduct(id) {
-  const confirmation = confirm('Are you sure you want to delete this product?');
+  const confirmation = await showConfirm('Are you sure you want to delete this product?', { type: 'danger', confirmText: 'Delete' });
   if (confirmation) {
     try {
       await deleteDoc(doc(db, "products", id));

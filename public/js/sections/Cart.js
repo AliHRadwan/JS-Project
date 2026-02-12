@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebas
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { showConfirm } from '../toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -159,7 +160,8 @@ async function clearCart() {
         const user = auth.currentUser;
         if (!user) return;
         
-        if (confirm('Are you sure you want to clear your cart?')) {
+        const confirmed = await showConfirm('Are you sure you want to clear your cart?', { type: 'danger', confirmText: 'Clear Cart' });
+        if (confirmed) {
             await updateDoc(doc(db, "users", user.uid), { cart: [] });
             loadCart();
         }

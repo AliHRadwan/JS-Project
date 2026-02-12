@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebas
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { toast } from '../toast.js';
+import { toast, showConfirm } from '../toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -221,7 +221,8 @@ async function editAddress(index) {
 }
 
 async function deleteAddress(index) {
-    if (confirm('Are you sure you want to delete this address?')) {
+    const confirmed = await showConfirm('Are you sure you want to delete this address?', { type: 'danger', confirmText: 'Delete' });
+    if (confirmed) {
         try {
             const user = auth.currentUser;
             if (!user) return;

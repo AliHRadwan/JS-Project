@@ -5,7 +5,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase
 import { onSnapshot, collection, getDocs, query, where, updateDoc, doc, getDoc, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { logout } from './logout.js';
-import { toast } from './toast.js';
+import { toast, showConfirm } from './toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -253,7 +253,7 @@ function addCancelListeners() {
       const order = allOrders.find(o => o.id === orderId);
       if (!order) return;
 
-      const confirming = confirm(`Are you sure you want to cancel order ${orderId}?`);
+      const confirming = await showConfirm(`Are you sure you want to cancel order ${orderId}?`, { type: 'warning', confirmText: 'Cancel Order' });
       if (!confirming) return;
 
       await updateDoc(doc(db, "orders", orderId), { status: "canceled" });

@@ -1,4 +1,5 @@
 import { logout } from '../logout.js';
+import { showConfirm } from '../toast.js';
 
 // Navigation Section - Function-based approach
 const elements = {
@@ -43,9 +44,10 @@ function bindEvents() {
         switchToSection('cartSection', e.target);
     });
     
-    elements.logoutNav?.addEventListener('click', (e) => {
+    elements.logoutNav?.addEventListener('click', async (e) => {
         e.preventDefault();
-        if (confirm("Are you sure you want to logout?")) {
+        const confirmed = await showConfirm("Are you sure you want to logout?", { type: 'warning', confirmText: 'Logout' });
+        if (confirmed) {
             logout();
         }
     });

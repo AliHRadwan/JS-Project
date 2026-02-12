@@ -3,6 +3,7 @@
     import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
     import { signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { showConfirm } from './toast.js';
 
     const firebaseConfig = {
     apiKey: "AIzaSyDBBHmLTSuwJhTcr5ZEBb7_mLKqZSfANC4",
@@ -186,8 +187,9 @@
         }
     });
 
-    clearSavedDataBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to clear all saved login data?')) {
+    clearSavedDataBtn.addEventListener('click', async () => {
+        const confirmed = await showConfirm('Are you sure you want to clear all saved login data?', { type: 'warning', confirmText: 'Clear Data' });
+        if (confirmed) {
             localStorage.removeItem('rememberedEmail');
             localStorage.removeItem('rememberedPassword');
             localStorage.removeItem('rememberMe');

@@ -3,7 +3,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { validateAndAddToCart, showStockNotification } from '../stock-checker.js';
-import { toast } from '../toast.js';
+import { toast, showConfirm } from '../toast.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -204,7 +204,8 @@ async function addToCart(index) {
 }
 
 async function removeFromWishlist(index) {
-    if (confirm('Are you sure you want to remove this item from your wishlist?')) {
+    const confirmed = await showConfirm('Are you sure you want to remove this item from your wishlist?', { type: 'warning', confirmText: 'Remove' });
+    if (confirmed) {
         try {
             const user = auth.currentUser;
             if (!user) return;
