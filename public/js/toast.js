@@ -306,5 +306,152 @@ export function showConfirm(message, options = {}) {
   });
 }
 
+/**
+ * Show a payment result dialog (success/fail) in the center of the page
+ * @param {boolean} success - Whether payment was successful
+ * @param {string} message - The message to display
+ * @param {object} options - Optional settings
+ * @param {string} options.redirectUrl - URL to redirect after closing (only for success)
+ * @param {number} options.autoCloseDelay - Auto close delay in ms (default: 0 = no auto close)
+ * @returns {Promise<void>} - Resolves when dialog is closed
+ */
+export function showPaymentResult(success, message, options = {}) {
+  const {
+    redirectUrl = null,
+    autoCloseDelay = 0
+  } = options;
+
+  return new Promise((resolve) => {
+    // Create overlay
+    const overlay = document.createElement('div');
+    Object.assign(overlay.style, {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      right: '0',
+      bottom: '0',
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: '10000',
+      opacity: '0',
+      transition: 'opacity 0.3s ease'
+    });
+
+    // Color schemes based on success/fail
+    const colorScheme = success 
+      ? { primary: '#10b981', hover: '#059669', bg: '#d1fae5', icon: '✓', title: 'Payment Successful!' }
+      : { primary: '#ef4444', hover: '#dc2626', bg: '#fee2e2', icon: '✕', title: 'Payment Failed' };
+
+    // Create dialog
+    const dialog = document.createElement('div');
+    Object.assign(dialog.style, {
+      backgroundColor: '#ffffff',
+      borderRadius: '16px',
+      padding: '32px',
+      maxWidth: '420px',
+      width: '90%',
+      boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)',
+      transform: 'scale(0.8) translateY(20px)',
+      transition: 'transform 0.3s ease',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      textAlign: 'center'
+    });
+
+    dialog.innerHTML = `
+      <div style="
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: ${colorScheme.bg};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px auto;
+        border: 3px solid ${colorScheme.primary};
+      ">
+        <span style="font-size: 40px; color: ${colorScheme.primary};">${colorScheme.icon}</span>
+      </div>
+      <h2 style="
+        margin: 0 0 12px 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: ${colorScheme.primary};
+      ">${colorScheme.title}</h2>
+      <p style="
+        margin: 0 0 28px 0;
+        font-size: 16px;
+        color: #6b7280;
+        line-height: 1.6;
+      ">${message}</p>
+      <button class="payment-result-btn" style="
+        padding: 14px 32px;
+        border: none;
+        background: ${colorScheme.primary};
+        color: #ffffff;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 140px;
+      ">${success ? 'Continue' : 'Try Again'}</button>
+    `;
+
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+
+    // Animate in
+    requestAnimationFrame(() => {
+      overlay.style.opacity = '1';
+      dialog.style.transform = 'scale(1) translateY(0)';
+    });
+
+    const closeDialog = () => {
+      overlay.style.opacity = '0';
+      dialog.style.transform = 'scale(0.8) translateY(20px)';
+      setTimeout(() => {
+        overlay.remove();
+        if (success && redirectUrl) {
+          window.location.href = redirectUrl;
+        }
+        resolve();
+      }, 300);
+    };
+
+    // Button handler
+    const btn = dialog.querySelector('.payment-result-btn');
+    btn.addEventListener('click', closeDialog);
+
+    // Hover effects
+    btn.addEventListener('mouseenter', () => {
+      btn.style.backgroundColor = colorScheme.hover;
+      btn.style.transform = 'scale(1.02)';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.backgroundColor = colorScheme.primary;
+      btn.style.transform = 'scale(1)';
+    });
+
+    // Focus the button
+    btn.focus();
+
+    // Close on Escape key
+    const handleKeydown = (e) => {
+      if (e.key === 'Escape' || e.key === 'Enter') {
+        document.removeEventListener('keydown', handleKeydown);
+        closeDialog();
+      }
+    };
+    document.addEventListener('keydown', handleKeydown);
+
+    // Auto close if delay specified
+    if (autoCloseDelay > 0) {
+      setTimeout(closeDialog, autoCloseDelay);
+    }
+  });
+}
+
 // Default export for simple usage
 export default showToast;

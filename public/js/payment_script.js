@@ -1,17 +1,18 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-functions.js";
-import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, runTransaction, doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { showPaymentResult } from "./toast.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDBBHmLTSuwJhTcr5ZEBb7_mLKqZSfANC4",
-    authDomain: "brand-website-ce759.firebaseapp.com",
-    databaseURL: "https://brand-website-ce759-default-rtdb.firebaseio.com",
-    projectId: "brand-website-ce759",
-    storageBucket: "brand-website-ce759.firebasestorage.app",
-    messagingSenderId: "234496063014",
-    appId: "1:234496063014:web:6e42b87acd29324f5718e7",
-    measurementId: "G-CG97PT2MV2"
+  apiKey: "AIzaSyDBBHmLTSuwJhTcr5ZEBb7_mLKqZSfANC4",
+  authDomain: "brand-website-ce759.firebaseapp.com",
+  databaseURL: "https://brand-website-ce759-default-rtdb.firebaseio.com",
+  projectId: "brand-website-ce759",
+  storageBucket: "brand-website-ce759.firebasestorage.app",
+  messagingSenderId: "234496063014",
+  appId: "1:234496063014:web:6e42b87acd29324f5718e7",
+  measurementId: "G-CG97PT2MV2"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -47,7 +48,7 @@ onAuthStateChanged(auth, async (user) => {
     const userDoc = await getDoc(userDocRef);
 
     if (userDoc.exists()) {
-      cart = userDoc.data().cart; 
+      cart = userDoc.data().cart;
       console.log("Cart loaded for user:", user.uid);
     } else {
       console.log("No user profile found in Firestore.");
@@ -61,31 +62,33 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 document.getElementById("payment-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
+  try {
     const response = await fetch("https://europe-central2-brand-website-ce759.cloudfunctions.net/createPaymentIntent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify([{ items: cart }, { user_id:  userId }])
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([{ items: cart }, { user_id: userId }])
     });
 
-        const data = await response.json();
-        const clientSecret = data.clientSecret;
+    const data = await response.json();
+    const clientSecret = data.clientSecret;
 
-        const messageDiv = document.getElementById("payment-message");
+    if (data.error) {
+      await showPaymentResult(false, data.error);
+      return;
+    }
 
-        if (data.error) {
-          messageDiv.textContent = "⚠️ " + data.error;
-        }
-
-        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: { card: cardElement }
-        });
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: { card: cardElement }
+    });
 
     if (error) {
-        messageDiv.textContent = "⚠️ " + error.message;
+      await showPaymentResult(false, error.message);
     } else if (paymentIntent.status === "succeeded") {
-        messageDiv.textContent = "✅ Payment successful!";
-        setTimeout(()=>{window.location.href = "orders.html";}, 3000);
+      await showPaymentResult(true, "Your payment has been processed successfully. Thank you for your purchase!", { redirectUrl: "orders.html" });
     }
+  } catch (err) {
+    await showPaymentResult(false, "An unexpected error occurred. Please try again.");
+  }
 });
