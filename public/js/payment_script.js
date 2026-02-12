@@ -37,6 +37,15 @@ const elements = stripe.elements();
 const cardElement = elements.create('card', { hidePostalCode: true, style: style });
 cardElement.mount("#card-element");
 
+// Track card element state for validation
+let cardComplete = false;
+let cardError = null;
+
+cardElement.on('change', (event) => {
+  cardComplete = event.complete;
+  cardError = event.error ? event.error.message : null;
+});
+
 const auth = getAuth();
 let cart = [];
 let userId = null;
@@ -63,6 +72,27 @@ onAuthStateChanged(auth, async (user) => {
 
 document.getElementById("payment-form").addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  // --- CARD VALIDATION ---
+  // Check if card info is complete
+  if (!cardComplete) {
+    const errorMsg = cardError || "Please enter valid card information.";
+    await showPaymentResult(false, errorMsg);
+    return;
+  }
+
+  // Validate card with Stripe by creating a payment method (doesn't charge)
+  const { error: cardValidationError, paymentMethod } = await stripe.createPaymentMethod({
+    type: 'card',
+    card: cardElement,
+  });
+
+  if (cardValidationError) {
+    await showPaymentResult(false, cardValidationError.message);
+    return;
+  }
+
+  console.log("Card validated successfully:", paymentMethod.id);
 
   try {
     const response = await fetch("https://europe-central2-brand-website-ce759.cloudfunctions.net/createPaymentIntent", {

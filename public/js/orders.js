@@ -167,6 +167,8 @@
                     };
                 });
 
+                // Sort orders by createdAt in descending order (newest first)
+                allOrders.sort((a, b) => b.createdAt - a.createdAt);
 
                 if (allOrders.length === 0) {
                     showEmptyState(true);
