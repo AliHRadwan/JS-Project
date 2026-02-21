@@ -113,13 +113,8 @@ function validateField(fieldId) {
         return false;
     }
     
-    if (fieldId === 'password' && value.length < 16) {
-        showError(fieldId, 'Password must be at least 16 characters long!');
-        return false;
-    }
-    
-    if (fieldId === 'password' && (!/[A-Z]/.test(value) || !/[0-9]/.test(value) || !/[@#$%&*]/.test(value))) {
-        showError(fieldId, 'Password must contain at least 1 uppercase letter, 1 number, and 1 symbol (@#$%&*)!');
+    if (fieldId === 'password' && value.length < 6) {
+        showError(fieldId, 'Password must be at least 6 characters!');
         return false;
     }
     
@@ -244,8 +239,8 @@ function validateFormData(formData) {
         hasErrors = true;
     }
     
-    if (formData.password.length < 16 || !/[A-Z]/.test(formData.password) || !/[0-9]/.test(formData.password) || !/[@#$%&*]/.test(formData.password)) {
-        showError('password', 'Password must be at least 16 characters long and contain at least 1 uppercase letter, 1 number, and 1 symbol (@#$%&*)!');
+    if (formData.password.length < 6) {
+        showError('password', 'Password must be at least 6 characters!');
         hasErrors = true;
     }
     
