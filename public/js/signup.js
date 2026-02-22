@@ -28,26 +28,31 @@ const formFields = ['username', 'firstName', 'lastName', 'email', 'phone', 'addr
 // ===========================================
 // SIGNUP FEATURE - VALIDATION FUNCTIONS
 // ===========================================
+function getFormGroup(field) {
+    if (!field) return null;
+    // Terms: use .form-check; other fields: use .signup-field or .mb-3 (legacy)
+    const fieldId = field.id;
+    if (fieldId === 'terms') {
+        return field.closest('.form-check');
+    }
+    return field.closest('.signup-field') || field.closest('.mb-3') || field.parentElement;
+}
+
 function showError(fieldId, message) {
     const field = document.getElementById(fieldId);
-    let formGroup;
-    
-    // For checkboxes, look for .form-check parent, otherwise look for .mb-3
-    if (fieldId === 'terms') {
-        formGroup = field.closest('.form-check');
-    } else {
-        formGroup = field.closest('.mb-3');
-    }
-    
+    if (!field) return;
+    const formGroup = getFormGroup(field);
+    if (!formGroup) return;
+
     // Remove old error
     const oldError = formGroup.querySelector('.invalid-feedback');
     if (oldError) {
         oldError.remove();
     }
-    
+
     // Add red border
     field.classList.add('is-invalid');
-    
+
     // Add error message
     const errorDiv = document.createElement('div');
     errorDiv.className = 'invalid-feedback';
@@ -57,21 +62,16 @@ function showError(fieldId, message) {
 
 function clearFieldError(fieldId) {
     const field = document.getElementById(fieldId);
-    let formGroup;
-    
-    // For checkboxes, look for .form-check parent, otherwise look for .mb-3
-    if (fieldId === 'terms') {
-        formGroup = field.closest('.form-check');
-    } else {
-        formGroup = field.closest('.mb-3');
-    }
-    
+    if (!field) return;
+    const formGroup = getFormGroup(field);
+    if (!formGroup) return;
+
     // Remove error message
     const errorDiv = formGroup.querySelector('.invalid-feedback');
     if (errorDiv) {
         errorDiv.remove();
     }
-    
+
     // Remove red border
     field.classList.remove('is-invalid');
 }
