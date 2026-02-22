@@ -67,6 +67,8 @@ function switchToSection(sectionId, clickedElement) {
     // Add active class to clicked nav link
     if (clickedElement) clickedElement.classList.add('active');
     
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     // Dispatch custom event for section change
     const sectionChangeEvent = new CustomEvent('sectionChanged', {
         detail: { sectionId: sectionId }
