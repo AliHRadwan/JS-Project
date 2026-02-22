@@ -391,33 +391,83 @@ function showGeneralError(message) {
 }
 
 // Global functions for the verification page
+let resendCooldown = false;
+
 window.resendVerificationEmail = async function(email) {
+    const container = document.querySelector('.verification-message');
+    if (!container) return;
+
+    if (resendCooldown) {
+        showVerificationAlert(container, 'warning', 'Please wait before requesting another email.');
+        return;
+    }
+
+    const user = auth.currentUser;
+    if (!user || user.email !== email) {
+        showVerificationAlert(container, 'warning', 'Session expired. Please <a href="signup.html" class="alert-link">sign up again</a>.');
+        return;
+    }
+
+    // Disable resend button during request
+    const resendBtn = container.querySelector('.btn-outline-dark');
+    if (resendBtn) {
+        resendBtn.disabled = true;
+        resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+    }
+
     try {
-        // Find the current user and resend verification email
-        const user = auth.currentUser;
-        if (user && user.email === email) {
-            await sendEmailVerification(user);
-            
-            // Show success message
-            const successDiv = document.createElement('div');
-            successDiv.className = 'alert alert-success mb-3';
-            successDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>Verification email sent successfully!';
-            
-            const container = document.querySelector('.verification-message');
-            if (!container) return;
-            container.insertBefore(successDiv, container.firstChild);
-            
-            setTimeout(() => {
-                if (successDiv.parentNode) {
-                    successDiv.parentNode.removeChild(successDiv);
+        await sendEmailVerification(user);
+        showVerificationAlert(container, 'success', 'Verification email sent successfully!');
+
+        // 60-second cooldown to avoid rate limits
+        resendCooldown = true;
+        let seconds = 60;
+        const interval = setInterval(() => {
+            seconds--;
+            if (resendBtn) {
+                resendBtn.innerHTML = `<i class="fas fa-clock me-2"></i>Resend in ${seconds}s`;
+            }
+            if (seconds <= 0) {
+                clearInterval(interval);
+                resendCooldown = false;
+                if (resendBtn) {
+                    resendBtn.disabled = false;
+                    resendBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Resend Verification Email';
                 }
-            }, 3000);
-        }
+            }
+        }, 1000);
     } catch (error) {
         console.error('Error resending verification email:', error);
-        toast.error('Failed to resend verification email. Please try again.');
+
+        let msg = 'Failed to resend verification email. Please try again.';
+        if (error.code === 'auth/too-many-requests') {
+            msg = 'Too many requests. Please wait a few minutes before trying again.';
+            resendCooldown = true;
+            setTimeout(() => { resendCooldown = false; }, 120000);
+        }
+        showVerificationAlert(container, 'danger', msg);
+
+        if (resendBtn) {
+            resendBtn.disabled = false;
+            resendBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Resend Verification Email';
+        }
     }
 };
+
+function showVerificationAlert(container, type, message) {
+    const existing = container.querySelector('.alert-dismissible, .alert-success, .alert-warning, .alert-danger');
+    if (existing) existing.remove();
+
+    const icons = { success: 'check-circle', warning: 'exclamation-triangle', danger: 'exclamation-circle' };
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} mb-3`;
+    alertDiv.innerHTML = `<i class="fas fa-${icons[type] || 'info-circle'} me-2"></i>${message}`;
+    container.insertBefore(alertDiv, container.firstChild);
+
+    setTimeout(() => {
+        if (alertDiv.parentNode) alertDiv.remove();
+    }, 5000);
+}
 
 window.goToLogin = function() {
     window.location.href = 'login.html';
