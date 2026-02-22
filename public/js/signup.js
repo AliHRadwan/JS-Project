@@ -30,12 +30,12 @@ const formFields = ['username', 'firstName', 'lastName', 'email', 'phone', 'addr
 // ===========================================
 function getFormGroup(field) {
     if (!field) return null;
-    // Terms: use .form-check; other fields: use .signup-field or .mb-3 (legacy)
-    const fieldId = field.id;
-    if (fieldId === 'terms') {
+    if (field.id === 'terms') {
         return field.closest('.form-check');
     }
-    return field.closest('.signup-field') || field.closest('.mb-3') || field.parentElement;
+    // For fields inside two-column rows, target the .col wrapper so
+    // Bootstrap's .is-invalid ~ .invalid-feedback sibling rule works
+    return field.closest('[class*="col-"]') || field.closest('.signup-field') || field.closest('.mb-3') || field.parentElement;
 }
 
 function showError(fieldId, message) {
@@ -300,11 +300,11 @@ signupForm.addEventListener('submit', async (e) => {
 function showEmailVerificationMessage(email) {
     // Hide the signup form
     const signupForm = document.getElementById('signupForm');
-    const signupContainer = signupForm.closest('.w-100');
+    const signupContainer = signupForm.closest('.signup-form-wrap') || signupForm.closest('.w-100');
     
     // Create verification message container
     const verificationContainer = document.createElement('div');
-    verificationContainer.className = 'text-center';
+    verificationContainer.className = 'text-center verification-message';
     verificationContainer.innerHTML = `
         <div class="mb-4">
             <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 rounded-circle mb-3" style="width: 80px; height: 80px;">
@@ -403,7 +403,8 @@ window.resendVerificationEmail = async function(email) {
             successDiv.className = 'alert alert-success mb-3';
             successDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>Verification email sent successfully!';
             
-            const container = document.querySelector('.text-center');
+            const container = document.querySelector('.verification-message');
+            if (!container) return;
             container.insertBefore(successDiv, container.firstChild);
             
             setTimeout(() => {
