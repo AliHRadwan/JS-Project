@@ -450,7 +450,8 @@ async function loadATCSuggestions(activeProduct){
 }
 
 function renderATCSuggestions(items){
-  const grid = document.querySelector(".atc-suggest-grid");
+  const modal = document.getElementById("addToCartModal");
+  const grid = modal?.querySelector(".atc-suggest-grid");
   if (!grid) return;
 
   if (!items.length) {

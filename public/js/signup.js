@@ -33,9 +33,12 @@ function getFormGroup(field) {
     if (field.id === 'terms') {
         return field.closest('.form-check');
     }
-    // For fields inside two-column rows, target the .col wrapper so
-    // Bootstrap's .is-invalid ~ .invalid-feedback sibling rule works
-    return field.closest('[class*="col-"]') || field.closest('.signup-field') || field.closest('.mb-3') || field.parentElement;
+    // For two-column fields, use the .col-6 wrapper so Bootstrap's
+    // .is-invalid ~ .invalid-feedback sibling rule works.
+    // Avoid matching layout columns like .col-lg-6.
+    const col = field.closest('.col-6, .col-md-6');
+    if (col) return col;
+    return field.closest('.signup-field') || field.closest('.mb-3') || field.parentElement;
 }
 
 function showError(fieldId, message) {
@@ -362,32 +365,35 @@ function handleSignupError(error) {
             break;
         case 'auth/network-request-failed':
             errorMessage = 'Network error. Please check your connection and try again.';
-            showGeneralError(errorMessage);
             break;
         case 'auth/too-many-requests':
             errorMessage = 'Too many requests. Please try again later.';
-            showGeneralError(errorMessage);
             break;
-        default:
-            showGeneralError(errorMessage);
     }
+
+    // Always show a visible alert at the top of the form
+    showGeneralError(errorMessage);
 }
 
 function showGeneralError(message) {
-    // Create a temporary error message at the top of the form
     const form = document.getElementById('signupForm');
+    if (!form) return;
+
+    // Remove any existing general error alert
+    const existing = form.querySelector('.signup-general-error');
+    if (existing) existing.remove();
+
     const errorDiv = document.createElement('div');
-    errorDiv.className = 'alert alert-danger mb-3';
-    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${message}`;
+    errorDiv.className = 'alert alert-danger signup-general-error d-flex align-items-center';
+    errorDiv.setAttribute('role', 'alert');
+    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-2 flex-shrink-0"></i><div>${message}</div>`;
     
     form.insertBefore(errorDiv, form.firstChild);
+    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     
-    // Remove the error message after 5 seconds
     setTimeout(() => {
-        if (errorDiv.parentNode) {
-            errorDiv.parentNode.removeChild(errorDiv);
-        }
-    }, 5000);
+        if (errorDiv.parentNode) errorDiv.remove();
+    }, 8000);
 }
 
 // Global functions for the verification page

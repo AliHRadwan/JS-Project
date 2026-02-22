@@ -8,7 +8,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebas
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { collection, getDocs, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, getDocs, doc, getDoc, updateDoc, serverTimestamp, query, where, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { validateAndAddToCart, showStockNotification } from './stock-checker.js';
 import { toast } from './toast.js';
 
@@ -480,9 +480,70 @@ async function openATCFromHome(productId){
     currentDismissHandlers.push({ element: x, handler: dismissHandler });
   });
 
+  // Load suggestions for the "You might also like" grid
+  loadHomeSuggestions(p.id, snap.data()?.category);
+
   // Show
   modal.setAttribute("aria-hidden","false");
   addBtn.focus();
+}
+
+async function loadHomeSuggestions(activeId, category) {
+  const modal = document.getElementById("homeAddToCartModal");
+  const grid = modal?.querySelector(".atc-suggest-grid");
+  if (!grid) return;
+
+  try {
+    const col = collection(db, "products");
+    const q = category
+      ? query(col, where("isActive","==",true), where("category","==",category), limit(6))
+      : query(col, where("isActive","==",true), limit(6));
+
+    const snaps = await getDocs(q);
+    const items = snaps.docs.map(d => {
+      const p = d.data() || {};
+      const base = Number(p.price || 0);
+      const discount = Number(p.discount || 0);
+      const finalPrice = discount > 0 ? +(base * (1 - discount/100)).toFixed(2) : base;
+      return {
+        id: d.id,
+        title: p.title || "Product",
+        image: (Array.isArray(p.images) && p.images[0]) || "",
+        price: finalPrice
+      };
+    })
+    .filter(x => x.id !== activeId)
+    .slice(0, 3);
+
+    renderHomeSuggestions(grid, items);
+  } catch (e) {
+    console.warn("Home ATC suggestions failed:", e);
+    grid.innerHTML = "";
+  }
+}
+
+function renderHomeSuggestions(grid, items) {
+  if (!items.length) {
+    grid.innerHTML = "";
+    return;
+  }
+
+  grid.innerHTML = items.map(p => `
+    <a class="s-card" href="ProductDetails.html?id=${encodeURIComponent(p.id)}" aria-label="View ${escapeHtml(p.title)}">
+      <img src="${escapeHtml(p.image || "")}" alt="${escapeHtml(p.title)}" loading="lazy">
+      <span class="s-title">${escapeHtml(p.title)}</span>
+      <span class="s-price">${money(p.price || 0)}</span>
+    </a>
+  `).join("");
+
+  grid.querySelectorAll("img").forEach(img => {
+    img.referrerPolicy = "no-referrer";
+    img.addEventListener("error", () => { img.src = ATC_PLACEHOLDER_IMG; }, { once: true });
+  });
+}
+
+function escapeHtml(str) {
+  return String(str || "").replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
 }
 
 // Load navbar when page loads
